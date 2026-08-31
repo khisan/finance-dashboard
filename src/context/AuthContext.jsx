@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 const [user, setUser] = useState(
   () => JSON.parse(localStorage.getItem("user")) || null,
@@ -7,6 +7,24 @@ const [token, setToken] = useState(
   () => localStorage.getItem("authToken") || null,
 )
 const [isLoading, setIsLoading] = useState(false)
+
+useEffect(() => {
+  const storedUser = localStorage.getItem("user")
+  const storedToken = localStorage.getItem("authToken")
+
+  if (storedUser && storedToken) {
+    try {
+      setUser(JSON.parse(storedUser))
+      setToken(storedToken)
+    } catch (error) {
+      console.error("Gagal parse data user:", error)
+      localStorage.removeItem("user")
+      localStorage.removeItem("authToken")
+    }
+  }
+
+  setIsLoading(false)
+}, [])
 
 const login = async (credentials) => {
   setIsLoading(true)
