@@ -1,15 +1,18 @@
 import { Routes, Route } from 'react-router-dom'
 import Dashboard from './components/Dashboard'
 import ProtectedRoute from './routes/ProtectedRoute'
+import { AuthProvider } from './context/AuthContext'
 
 function App() {
 
   return (
-    <Routes>
-      <Route element={<ProtectedRoute />}>
-        <Route path="/dashboard" element={<Dashboard />} />
-      </Route>
-    </Routes>
+    <AuthProvider>
+      <Routes>
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Route>
+      </Routes>
+    </AuthProvider>
   )
 }
 
