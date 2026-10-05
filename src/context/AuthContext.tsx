@@ -1,15 +1,29 @@
 import { useState, useEffect, createContext, useContext } from "react"
+import { User, LoginCredentials, AuthContextType } from "../types/auth"
+import api from "../services/api"
 
-export const AuthContext = createContext()
+export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(
-    () => JSON.parse(localStorage.getItem("user")) || null,
-  )
-  const [token, setToken] = useState(
+interface AuthProviderProps {
+  children: React.ReactNode
+}
+
+export const AuthProvider = ({ children }: AuthProviderProps) => {
+  const [user, setUser] = useState<User | null>(() => {
+    const storedUser = localStorage.getItem("user")
+    if (!storedUser) return null
+    try {
+      return JSON.parse(storedUser)
+    } catch (error) {
+      console.error("Gagal parse data user:", error)
+      localStorage.removeItem("user")
+      return null
+    }
+  })
+  const [token, setToken] = useState<string | null>(
     () => localStorage.getItem("authToken") || null,
   )
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user")
@@ -29,7 +43,7 @@ export const AuthProvider = ({ children }) => {
     setIsLoading(false)
   }, [])
 
-  const login = async (credentials) => {
+  const login = async (credentials: LoginCredentials): Promise<void> => {
     setIsLoading(true)
     try {
       // Simulate an API call
@@ -61,6 +75,10 @@ export const AuthProvider = ({ children }) => {
   )
 }
 
-export const useAuth = () => {
-  return useContext(AuthContext)
+export const useAuth = (): AuthContextType => {
+  const context = useContext(AuthContext)
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider")
+  }
+  return context
 }

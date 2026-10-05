@@ -1,4 +1,5 @@
-const { default: axios } = require("axios")
+import axios, { InternalAxiosRequestConfig } from "axios"
+// import loginRedirect from "../utils/loginRedirect"
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -10,7 +11,7 @@ const api = axios.create({
 })
 
 api.interceptors.request.use(
-  (config) => {
+  async (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem("authToken") // Retrieve the auth token from local storage
     if (token) {
       config.headers.Authorization = `Bearer ${token}` // Attach the token to the Authorization header
@@ -29,8 +30,8 @@ api.interceptors.response.use(
   (error) => {
     // Handle errors globally
     if (error.response && error.response.status === 401) {
-      localStorage.removeItem("authToken") / // Remove the token from local storage
-        loginRedirect() // Redirect to login page (implement this function as needed)
+      localStorage.removeItem("authToken") // Remove the token from local storage
+      // loginRedirect() // Redirect to login page (implement this function as needed)
       console.error("Unauthorized access - perhaps the token has expired.")
     } else if (error.request) {
       // Request was made but no response received

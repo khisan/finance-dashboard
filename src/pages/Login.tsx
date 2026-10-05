@@ -1,32 +1,32 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
-import { Lock, Mail, Eye, EyeOff, ArrowRight } from 'lucide-react'
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { useAuth } from "../context/AuthContext"
+import { Lock, Mail, Eye, EyeOff, ArrowRight } from "lucide-react"
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
-  const [error, setError] = useState('')
+  const [error, setError] = useState("")
 
   const { login } = useAuth()
   const navigate = useNavigate()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setError('')
+    setError("")
 
     if (!email || !password) {
-      setError('Email dan password wajib diisi!')
+      setError("Email dan password wajib diisi!")
       return
     }
 
     try {
       // Panggil fungsi login dari AuthContext
-      login({ email })
-      navigate('/dashboard', { replace: true })
+      login({ email, password })
+      navigate("/dashboard", { replace: true })
     } catch (err) {
-      setError('Login gagal. Periksa kembali kredensial Anda.')
+      setError("Login gagal. Periksa kembali kredensial Anda.")
     }
   }
 
@@ -34,14 +34,17 @@ export default function LoginPage() {
     <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4 font-sans">
       {/* Material Elevation Card */}
       <div className="w-full max-w-md bg-slate-800 rounded-2xl shadow-2xl border border-slate-700/60 p-8 transition-all">
-
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-12 h-12 bg-blue-600/20 text-blue-400 rounded-xl mb-3 border border-blue-500/30">
             <Lock className="w-6 h-6" />
           </div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Selamat Datang</h1>
-          <p className="text-sm text-slate-400 mt-1">Masukkan akun Anda untuk melanjutkan</p>
+          <h1 className="text-2xl font-bold text-white tracking-tight">
+            Selamat Datang
+          </h1>
+          <p className="text-sm text-slate-400 mt-1">
+            Masukkan akun Anda untuk melanjutkan
+          </p>
         </div>
 
         {/* Error Alert */}
@@ -53,7 +56,6 @@ export default function LoginPage() {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
-
           {/* Input Email */}
           <div className="space-y-1">
             <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
@@ -79,7 +81,7 @@ export default function LoginPage() {
             <div className="relative flex items-center">
               <Lock className="w-5 h-5 absolute left-3.5 text-slate-400" />
               <input
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
@@ -90,7 +92,11 @@ export default function LoginPage() {
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3.5 text-slate-400 hover:text-slate-200 transition-colors"
               >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
               </button>
             </div>
           </div>
@@ -98,10 +104,15 @@ export default function LoginPage() {
           {/* Remember / Forgot Password */}
           <div className="flex items-center justify-between text-xs pt-1">
             <label className="flex items-center gap-2 text-slate-400 cursor-pointer">
-              <input type="checkbox" className="rounded bg-slate-900 border-slate-700 text-blue-600 focus:ring-0 focus:ring-offset-0" />
+              <input
+                type="checkbox"
+                className="rounded bg-slate-900 border-slate-700 text-blue-600 focus:ring-0 focus:ring-offset-0"
+              />
               <span>Ingat saya</span>
             </label>
-            <a href="#" className="text-blue-400 hover:underline">Lupa password?</a>
+            <a href="#" className="text-blue-400 hover:underline">
+              Lupa password?
+            </a>
           </div>
 
           {/* Material Style Button */}
@@ -112,9 +123,7 @@ export default function LoginPage() {
             <span>Masuk Dashboard</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </button>
-
         </form>
-
       </div>
     </div>
   )
