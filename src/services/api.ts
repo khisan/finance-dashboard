@@ -6,7 +6,6 @@ const api = axios.create({
   timeout: 10000, // Set a timeout of 10 seconds for all requests
   headers: {
     "Content-Type": "application/json",
-    Accept: "application/json",
   },
 })
 
@@ -25,7 +24,7 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
   (response) => {
-    return response.data // Return only the data from the response
+    return response
   },
   (error) => {
     // Handle errors globally

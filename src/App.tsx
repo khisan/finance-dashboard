@@ -1,17 +1,17 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
-import { AuthProvider } from './context/AuthContext'
-import ProtectedRoute from './components/ProtectedRoute'
-import LoginPage from './pages/Login'
+import { Routes, Route, Navigate } from "react-router-dom"
+import { AuthProvider } from "./context/AuthContext"
+import ProtectedRoute from "./components/ProtectedRoute"
+import LoginPage from "./pages/Login"
+import { Dashboard } from "./pages/Dashboard"
 
 function App() {
-
   return (
     <AuthProvider>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         {/* <Route path="/" element={<Navigate to="/dashboard" replace />} /> */}
         <Route element={<ProtectedRoute />}>
-          {/* <Route path="/dashboard" element={<Dashboard />} /> */}
+          <Route path="/dashboard" element={<Dashboard />} />
         </Route>
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>

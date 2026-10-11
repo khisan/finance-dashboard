@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import { Lock, Mail, Eye, EyeOff, ArrowRight } from "lucide-react"
@@ -12,7 +12,16 @@ export default function LoginPage() {
   const { login } = useAuth()
   const navigate = useNavigate()
 
-  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    if (!error) return
+    const timer = setTimeout(() => {
+      setError("")
+    }, 4000)
+
+    return () => clearTimeout(timer)
+  }, [error])
+
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError("")
 
@@ -23,9 +32,10 @@ export default function LoginPage() {
 
     try {
       // Panggil fungsi login dari AuthContext
-      login({ email, password })
+      await login({ email, password })
       navigate("/dashboard", { replace: true })
     } catch (err) {
+      console.log("error di handle submit login: ", err)
       setError("Login gagal. Periksa kembali kredensial Anda.")
     }
   }

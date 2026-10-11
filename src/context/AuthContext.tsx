@@ -1,6 +1,7 @@
 import { useState, useEffect, createContext, useContext } from "react"
 import { User, LoginCredentials, AuthContextType } from "../types/auth"
 import api from "../services/api"
+import { ApiResponse } from "@/types/api"
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
@@ -46,16 +47,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const login = async (credentials: LoginCredentials): Promise<void> => {
     setIsLoading(true)
     try {
-      // Simulate an API call
-      const response = await api.post("/login", credentials)
-      const { user, token } = response.data
+      // Simulate an API call\
+      const response = await api.post<ApiResponse<string>>(
+        "/auth/login",
+        credentials,
+      )
+      const token = response.data.data
 
       localStorage.setItem("user", JSON.stringify(user))
+      console.log("user: ", user)
       localStorage.setItem("authToken", token)
       setUser(user)
       setToken(token)
     } catch (error) {
-      console.error("Error during login:", error)
+      throw error
     } finally {
       setIsLoading(false)
     }
