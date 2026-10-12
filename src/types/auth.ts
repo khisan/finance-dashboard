@@ -1,19 +1,21 @@
-export interface User {
-  id?: number
+import { User } from "./user"
+
+export interface LoginRequest {
   email: string
-  name?: string
-  role?: string
+  password: string
 }
 
-export interface LoginCredentials {
+export interface RegisterRequest {
+  fullName: string
   email: string
-  password?: string
+  password: string
 }
 
 export interface AuthContextType {
   user: User | null
   token: string | null
   isLoading: boolean
-  login: (credentials: LoginCredentials) => Promise<void>
+  login: (credentials: LoginRequest) => Promise<void>
   logout: () => void
+  getUser: (email: string) => void
 }

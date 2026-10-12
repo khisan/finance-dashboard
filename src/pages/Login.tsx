@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { useAuth } from "../context/AuthContext"
+import { useAuth } from "@/hooks/useAuth"
 import { Lock, Mail, Eye, EyeOff, ArrowRight } from "lucide-react"
 
 export default function LoginPage() {
@@ -9,7 +9,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState("")
 
-  const { login } = useAuth()
+  const { login, getUser } = useAuth()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -33,6 +33,8 @@ export default function LoginPage() {
     try {
       // Panggil fungsi login dari AuthContext
       await login({ email, password })
+
+      await getUser(email)
       navigate("/dashboard", { replace: true })
     } catch (err) {
       console.log("error di handle submit login: ", err)

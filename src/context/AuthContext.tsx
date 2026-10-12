@@ -1,7 +1,7 @@
 import { useState, useEffect, createContext, useContext } from "react"
-import { User, LoginCredentials, AuthContextType } from "../types/auth"
-import api from "../services/api"
-import { ApiResponse } from "@/types/api"
+import { LoginRequest, AuthContextType } from "../types/auth"
+import { User } from "@/types/user"
+import { authServices } from "@/services/auth/authService"
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
@@ -44,20 +44,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setIsLoading(false)
   }, [])
 
-  const login = async (credentials: LoginCredentials): Promise<void> => {
+  const login = async (credentials: LoginRequest): Promise<void> => {
     setIsLoading(true)
     try {
-      // Simulate an API call\
-      const response = await api.post<ApiResponse<string>>(
-        "/auth/login",
-        credentials,
-      )
-      const token = response.data.data
-
-      localStorage.setItem("user", JSON.stringify(user))
-      console.log("user: ", user)
+      const token = await authServices.login(credentials)
       localStorage.setItem("authToken", token)
-      setUser(user)
       setToken(token)
     } catch (error) {
       throw error
@@ -73,17 +64,26 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setToken(null)
   }
 
+  const getUser = async (email: string) => {
+    setIsLoading(true)
+    try {
+      const user = await authServices.getUser(email)
+      const userStr = JSON.stringify(user)
+      localStorage.setItem("User", userStr)
+      setUser(user)
+      console.log("set user: ", user)
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
-    <AuthContext.Provider value={{ user, token, isLoading, login, logout }}>
+    <AuthContext.Provider
+      value={{ user, token, isLoading, login, logout, getUser }}
+    >
       {children}
     </AuthContext.Provider>
   )
-}
-
-export const useAuth = (): AuthContextType => {
-  const context = useContext(AuthContext)
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider")
-  }
-  return context
 }
