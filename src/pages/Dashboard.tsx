@@ -98,6 +98,136 @@ export const Dashboard = () => {
           + Create New Loan
         </button>
       </header>
+
+      {/* Metric Overview*/}
+      <div className="mb-8 grid grid-cols-1 gap-5 md:grid-cols-4">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <p className="text-xs font-medium text-slate-500 uppercase">
+            Total Active Exposure
+          </p>
+          <p className="mt-2 text-2xl font-bold text-slate-900">
+            {formatRupiah(450000000)}
+          </p>
+        </div>
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <p className="text-xs font-medium text-slate-500 uppercase">
+            Ready for Disbursement
+          </p>
+          <p className="mt-2 text-2xl font-bold text-blue-600">
+            {formatRupiah(50000000)}
+          </p>
+        </div>
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <p className="text-xs font-medium text-slate-500 uppercase">
+            Collateral Value
+          </p>
+          <p className="mt-2 text-2xl font-bold text-blue-600">
+            {formatRupiah(700000000)}
+          </p>
+        </div>
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <p className="text-xs font-medium text-slate-500 uppercase">
+            Settled This Month
+          </p>
+          <p className="mt-2 text-2xl font-bold text-blue-600">
+            {formatRupiah(150000000)}
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        {/* Loan List (2 Kolom) */}
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-lg font-bold text-slate-900">Loan List</h2>
+            <span className="text-xs font-medium text-slate-400">
+              Total: {loans.length} Loans
+            </span>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="border-b border-slate-100 text-xs text-slate-400 uppercase">
+                  <th className="pb-3 font-semibold">Loan ID & Borrower</th>
+                  <th className="pb-3 font-semibold">Amount & Tenor</th>
+                  <th className="pb-3 font-semibold">Status</th>
+                  <th className="pb-3 font-semibold">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {loans.map((loan) => (
+                  <tr
+                    key={loan.id}
+                    onClick={() => setSelectedLoan(loan)}
+                    className={`cursor-pointer transition-colors ${selectedLoan.id === loan.id ? "bg-blue-50/50" : "hover:bg-slate-50"}`}
+                  >
+                    <td className="py-4">
+                      <p className="font-semibold text-slate-900">{loan.id}</p>
+                      <p className="text-xs text-slate-500">
+                        {loan.borrowerName}
+                      </p>
+                    </td>
+                    <td className="py-4">
+                      <p className="font-medium text-slate-900">
+                        {formatRupiah(loan.loanAmount)}
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        {loan.tenorMonths} Bunga: {loan.interestRate}%
+                      </p>
+                    </td>
+                    <td className="py-4">
+                      <span
+                        className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${getStatusBadge(loan.status)}`}
+                      >
+                        {loan.status}
+                      </span>
+                    </td>
+                    <td className="py-4 text-right">
+                      <button className="text-xs font-semibold text-blue-600 hover:underline">
+                        View Detail →
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Loan Detail, Collateral, Disbursement & Settlement Panel (1 Kolom) */}
+        <div className="space-y-6">
+          {/* Loan Detail & Collateral Card */}
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h3 className="border-b border-slate-100 pb-3 text-lg font-bold text-slate-900">
+              Loan Detail:{" "}
+              <span className="text-blue-600">{selectedLoan.id}</span>
+            </h3>
+
+            <div className="mt-4 space-y-3 text-sm">
+              <div className="flex justify-between">
+                <span className="text-slate-500">Borrower:</span>
+                <span className="font-semibold text-slate-900">
+                  {selectedLoan.borrowerName}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Loan Amount:</span>
+                <span className="font-semibold text-slate-900">
+                  {formatRupiah(selectedLoan.loanAmount)}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Tenor & Rate:</span>
+                <span className="font-medium text-slate-900">
+                  {selectedLoan.tenorMonths} Bulan ({selectedLoan.interestRate}
+                  %)
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
