@@ -225,6 +225,46 @@ export const Dashboard = () => {
                 </span>
               </div>
             </div>
+
+            {/* Collateral Section */}
+            <div className="mt-6 rounded-xl bg-slate-50 p-4 border border-slate-100">
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                Collateral Info
+              </p>
+              <p className="mt-2 font-semibold text-slate-900">
+                {selectedLoan.collateral.type}
+              </p>
+              <p className="text-xs text-slate-500">
+                Doc No: {selectedLoan.collateral.documentNo}
+              </p>
+              <div className="mt-2 flex justify-between text-xs border-t border-slate-200 pt-2">
+                <span className="text-slate-500">Est. Value:</span>
+                <span className="font-bold text-emerald-600">
+                  {formatRupiah(selectedLoan.collateral.estimatedValue)}
+                </span>
+              </div>
+            </div>
+
+            {/* Ations: Disbursement & Settlement*/}
+            <div className="mt-6 space-y-2">
+              {selectedLoan.status === "PENDING" && (
+                <button className="w-full rounded-xl bg-blue-600 py-2.5 text-xs font-bold text-white hover:bg-blue-700 transition-colors">
+                  Process Disbursement
+                </button>
+              )}
+
+              {selectedLoan.status === "ACTIVE" && (
+                <button className="w-full rounded-xl bg-purple-600 py-2.5 text-xs font-bold text-white hover:bg-purple-700 transition-colors">
+                  Process Settlement (Pelunasan)
+                </button>
+              )}
+
+              {selectedLoan.status === "SETTLED" && (
+                <div className="rounded-xl bg-purple-50 p-3 text-center text-xs font-medium text-purple-700 border border-purple-100">
+                  Loan ini telah LUNAS pada {selectedLoan.settlementDate}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
