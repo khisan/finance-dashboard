@@ -69,7 +69,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       const user = await authServices.getUser(email)
       const userStr = JSON.stringify(user)
-      localStorage.setItem("User", userStr)
+      localStorage.setItem("user", userStr)
       setUser(user)
       console.log("set user: ", user)
     } catch (e) {

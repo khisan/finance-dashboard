@@ -41,7 +41,7 @@ export const authServices = {
 
   getUser: async (email: string): Promise<User> => {
     const safeEmail = encodeURIComponent(email)
-    const response = await api.get<ApiResponse<User>>(`/users/${safeEmail}`)
+    const response = await api.get<ApiResponse<User>>(`/users/email/${safeEmail}`)
     console.log("response get user: ", response.data.data)
     return response.data.data
   },

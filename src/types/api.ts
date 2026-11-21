@@ -1,5 +1,11 @@
 export interface ApiResponse<T> {
-  data: T
+  success: boolean
   message: string
-  status: number
+  data: T
+  status?: number
+}
+
+export interface ApiError {
+  message: string
+  status?: number
 }
