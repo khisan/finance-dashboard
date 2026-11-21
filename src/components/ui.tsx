@@ -1,5 +1,6 @@
 
-import type { ReactNode } from "react"
+import type { ReactNode, InputHTMLAttributes } from "react"
+import { Search, CircleAlert, Inbox } from "lucide-react"
 
 const border = "border-border"
 const bgSurface = "bg-surface"
@@ -129,10 +130,7 @@ export function EmptyState({ title, description, action }: {
   return (
     <div className="flex flex-col items-center justify-center py-12 text-center">
       <div className="w-12 h-12 rounded-full bg-stone-100 text-stone-400 flex items-center justify-center">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"className="w-6 h-6">
-          <circle cx="11" cy="11" r="7" />
-          <path d="M21 21l-4.35-4.35" />
-        </svg>
+        <Inbox className="w-6 h-6" aria-hidden="true" />
       </div>
       <p className="mt-4 text-sm font-medium text-stone-700">{title}</p>
       {description ? <p className="mt-1 text-sm text-stone-500 max-w-xs">{description}</p> : null}
@@ -150,10 +148,7 @@ export function ErrorState({ title, description, onRetry }: {
   return (
     <div className="flex flex-col items-center justify-center py-12 text-center">
       <div className="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
-          <circle cx="12" cy="12" r="9" />
-          <path d="M12 8v4M12 16h.01" />
-        </svg>
+        <CircleAlert className="w-6 h-6" aria-hidden="true" />
       </div>
       <p className="mt-4 text-sm font-medium text-red-700">{title}</p>
       {description ? <p className="mt-1 text-sm text-red-500 max-w-xs">{description}</p> : null}
@@ -167,18 +162,15 @@ export function Skeleton({ className, ...rest }: React.HTMLAttributes<HTMLDivEle
   return <div className={`animate-pulse rounded bg-stone-200 ${className ?? ""}`} {...rest} />
 }
 
-/** Search input */
-export function SearchInput({ defaultValue }: { defaultValue?: string }) {
+/** Search input (value/onChange forwarded) */
+export function SearchInput({ className = "", ...rest }: InputHTMLAttributes<HTMLInputElement>) {
   return (
     <div className="relative">
-      <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="10.5" cy="10.5" r="6.5" />
-        <path d="M15 15l5 5" />
-      </svg>
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" aria-hidden="true" />
       <input
-        className="w-full pl-9 pr-3 py-2 rounded-lg border border-stone-200 bg-white text-sm text-stone-800 placeholder-stone-400 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400/20"
+        className={`w-full pl-9 pr-3 py-2 rounded-lg border border-stone-200 bg-white text-sm text-stone-800 placeholder-stone-400 focus:border-blue-400 focus:outline-none focus:ring-2 focus:ring-blue-400/20 ${className}`}
         placeholder="Cari..."
-        defaultValue={defaultValue}
+        {...rest}
       />
     </div>
   )
