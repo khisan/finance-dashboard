@@ -2,7 +2,7 @@ import { useState } from "react"
 import { CreateModal } from "@/components/CreateModal"
 import { loanCreateFields } from "@/forms/createFields"
 import { createLoan } from "@/services/loanService"
-import { getCustomers } from "@/services/customerService"
+import { getCustomerNames } from "@/services/customerService"
 import type { Loan } from "@/types/loan"
 
 /** Shape used by this dashboard view (dummy data + newly created loans). */
@@ -107,12 +107,11 @@ export const Dashboard = () => {
 
   const handleCreated = (loan: Loan) => {
     // Dashboard pakai data contoh; pinjaman baru tetap ditampilkan di daftar.
-    void getCustomers()
-      .then((customers) => {
-        const customer = customers.find((c) => c.id === loan.customerId)
+    void getCustomerNames([loan.customerId])
+      .then((names) => {
         return {
           id: loan.id,
-          borrowerName: customer?.fullName ?? "Nasabah baru",
+          borrowerName: names[loan.customerId] ?? "Nasabah baru",
           loanAmount: Number(loan.amount),
           tenorMonths: loan.tenorMonths,
           interestRate: loan.interestRate,
