@@ -39,9 +39,6 @@ export default function DashboardLayout() {
   const location = useLocation()
   const [mobileOpen, setMobileOpen] = useState(false)
 
-  const title = pageTitles[location.pathname] ?? "Dashboard"
-  const subtitle = pageSubtitles[location.pathname] ?? ""
-
   return (
     <div className="flex min-h-screen bg-stone-100">
       {mobileOpen ? (
@@ -66,9 +63,7 @@ export default function DashboardLayout() {
             <MenuIcon className="h-5 w-5" />
           </button>
 
-          <div className="flex-1 text-sm font-medium text-stone-900">
-            {title}
-          </div>
+          <div className="flex-1"></div>
 
           <div className="flex items-center gap-2">
             <button
@@ -83,7 +78,9 @@ export default function DashboardLayout() {
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-700">
                 <PersonIcon className="h-4 w-4" />
               </div>
-              <span className="hidden text-sm text-stone-700 sm:inline">Admin</span>
+              <span className="hidden text-sm text-stone-700 sm:inline">
+                Admin
+              </span>
             </button>
 
             <button
@@ -100,10 +97,6 @@ export default function DashboardLayout() {
         </header>
 
         <main className="flex-1 max-w-7xl w-full p-4 sm:p-6 lg:p-8">
-          <div className="mb-4">
-            <h1 className="text-lg font-semibold text-stone-900">{title}</h1>
-            <p className="text-sm text-stone-500">{subtitle}</p>
-          </div>
           <Outlet />
         </main>
       </div>
