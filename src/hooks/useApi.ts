@@ -39,14 +39,14 @@ export function useAsync<T>(
   }, [key, fn])
 
   useEffect(() => {
-    if (immediate) void run()
+    if (immediate) void run().catch(() => {})
     return () => {
       // disconnect abortController if supported
     }
   }, [run, immediate])
 
   const refetch = useCallback(() => {
-    void run()
+    void run().catch(() => {})
   }, [run])
 
   return { data, loading, error, expired, refetch }

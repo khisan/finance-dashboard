@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react"
 import type { ReactNode } from "react"
-import { Card, Skeleton, EmptyState, ErrorState } from "@/components/ui"
+import { Card, Skeleton, EmptyState, ErrorState, SearchInput } from "@/components/ui"
 
 export interface Column<T> {
   key: string
