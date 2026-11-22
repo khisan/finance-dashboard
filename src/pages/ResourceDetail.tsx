@@ -5,7 +5,7 @@ import { Button, StatusChip } from "@/components/ui"
 import { CreateModal, type FormField } from "@/components/CreateModal"
 import { DetailView, type DetailField, type DetailSection } from "@/components/DetailView"
 import { useAsync } from "@/hooks/useApi"
-import { formatDate, formatIDR } from "@/lib/format"
+import { formatDate, formatIDR, loanLabel } from "@/lib/format"
 import { toFormValues } from "@/lib/formValues"
 import {
   customerCreateFields,
@@ -91,8 +91,9 @@ const configs: Record<string, ResourceConfig> = {
     editFields: loanCreateFields,
     getDetail: async (id) => (await getLoanDetail(id)) as unknown as DetailRecord | null,
     update: (id, body) => updateLoan(id, body as unknown as Parameters<typeof updateLoan>[1]),
-    recordLabel: (r) => str(r.id),
+    recordLabel: (r) => str(r.loanNumber),
     fields: (r) => [
+      f("No. Pinjaman", str(r.loanNumber)),
       f("ID Pinjaman", str(r.id)),
       f("Nasabah", str(r.borrowerName)),
       f("Customer ID", str(r.customerId)),
@@ -169,7 +170,18 @@ const configs: Record<string, ResourceConfig> = {
     recordLabel: (r) => str(r.documentNumber),
     fields: (r) => [
       f("ID", str(r.id)),
-      f("Pinjaman", str(r.loanId)),
+      f(
+        "Pinjaman",
+        <span>
+          {loanLabel(r)}
+          {r.loanId ? (
+            <span className="mt-0.5 block font-mono text-xs text-stone-400">
+              {str(r.loanId)}
+            </span>
+          ) : null}
+        </span>,
+        true,
+      ),
       f("Tipe", TYPE_LABEL[r.type as CollateralType] ?? str(r.type)),
       f("No. Dokumen", str(r.documentNumber)),
       f("Nilai Estimasi", money(r.marketValue)),
@@ -189,7 +201,18 @@ const configs: Record<string, ResourceConfig> = {
     recordLabel: (r) => str(r.fullName),
     fields: (r) => [
       f("ID", str(r.id)),
-      f("Pinjaman", str(r.loanId)),
+      f(
+        "Pinjaman",
+        <span>
+          {loanLabel(r)}
+          {r.loanId ? (
+            <span className="mt-0.5 block font-mono text-xs text-stone-400">
+              {str(r.loanId)}
+            </span>
+          ) : null}
+        </span>,
+        true,
+      ),
       f("Nama Lengkap", str(r.fullName)),
       f("Nomor Identitas", str(r.identityNumber)),
       f("Email", str(r.email)),
@@ -209,7 +232,18 @@ const configs: Record<string, ResourceConfig> = {
     recordLabel: (r) => str(r.invoiceNumber),
     fields: (r) => [
       f("ID", str(r.id)),
-      f("Pinjaman", str(r.loanId)),
+      f(
+        "Pinjaman",
+        <span>
+          {loanLabel(r)}
+          {r.loanId ? (
+            <span className="mt-0.5 block font-mono text-xs text-stone-400">
+              {str(r.loanId)}
+            </span>
+          ) : null}
+        </span>,
+        true,
+      ),
       f("No. Faktur", str(r.invoiceNumber)),
       f("Angsuran Ke-", str(r.installmentNumber)),
       f("Pokok", money(r.principalAmount)),
@@ -232,7 +266,18 @@ const configs: Record<string, ResourceConfig> = {
     recordLabel: (r) => str(r.disbursementNumber),
     fields: (r) => [
       f("ID", str(r.id)),
-      f("Pinjaman", str(r.loanId)),
+      f(
+        "Pinjaman",
+        <span>
+          {loanLabel(r)}
+          {r.loanId ? (
+            <span className="mt-0.5 block font-mono text-xs text-stone-400">
+              {str(r.loanId)}
+            </span>
+          ) : null}
+        </span>,
+        true,
+      ),
       f("No. Pencairan", str(r.disbursementNumber)),
       f("Nominal", money(r.amount)),
       f("Bank", str(r.bankName)),

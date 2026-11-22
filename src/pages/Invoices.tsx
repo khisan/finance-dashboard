@@ -3,7 +3,7 @@ import { Button } from "@/components/ui"
 import { CreateModal } from "@/components/CreateModal"
 import { RowActions } from "@/components/RowActions"
 import { invoiceCreateFields } from "@/forms/createFields"
-import { formatDate, formatIDR } from "@/lib/format"
+import { formatDate, formatIDR, loanLabel } from "@/lib/format"
 import { toFormValues } from "@/lib/formValues"
 import { useAsync } from "@/hooks/useApi"
 import {
@@ -53,7 +53,18 @@ export default function InvoicesPage() {
   const columns = [
     { key: "id", header: "ID" },
     { key: "invoiceNumber", header: "Nomor Faktur" },
-    { key: "loanId", header: "Pinjaman" },
+    {
+      key: "loanId",
+      header: "Pinjaman",
+      render: (r) => {
+        const row = r as InvoiceListItem
+        return (
+          <span title={row.loanId} className="whitespace-nowrap">
+            {loanLabel(row)}
+          </span>
+        )
+      },
+    },
     { key: "installmentNumber", header: "Nomor Angsuran" },
     {
       key: "totalAmount",
@@ -95,7 +106,7 @@ export default function InvoicesPage() {
         loading={loading}
         error={error}
         onRetry={refetch}
-        searchKeys={["invoiceNumber", "loanId"]}
+        searchKeys={["invoiceNumber", "loanNumber", "customerName"]}
         pageSize={8}
         emptyMessage="Belum ada faktur. Tambah pinjaman dulu, lalu buat fakturnya."
         title="Faktur Tagihan"

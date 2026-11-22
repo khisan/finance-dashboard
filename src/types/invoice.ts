@@ -3,6 +3,8 @@ import type { InvoiceStatus } from "./enums"
 export interface Invoice {
   id: string
   loanId: string
+  loanNumber: string
+  customerName: string
   invoiceNumber: string
   installmentNumber: number
   principalAmount: number
@@ -19,6 +21,8 @@ export interface Invoice {
 export interface InvoiceListItem {
   id: string
   loanId: string
+  loanNumber: string
+  customerName: string
   invoiceNumber: string
   installmentNumber: number
   principalAmount: number

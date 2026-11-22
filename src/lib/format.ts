@@ -10,6 +10,16 @@ export function formatIDR(value: number | string | null | undefined): string {
   }).format(num)
 }
 
+/** Label ramah manusia untuk relasi loan, mis. "LN-2026-0001 — Siti Rahma". */
+export function loanLabel(loan: {
+  loanNumber?: string | null
+  loanId?: string | null
+  customerName?: string | null
+}): string {
+  const number = loan.loanNumber || loan.loanId || "—"
+  return loan.customerName ? `${number} — ${loan.customerName}` : number
+}
+
 export function formatDate(value: string | null | undefined): string {
   if (!value) return "—"
   const d = new Date(value)

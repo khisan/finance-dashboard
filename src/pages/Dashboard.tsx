@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom"
 import { CreateModal } from "@/components/CreateModal"
 import { loanCreateFields } from "@/forms/createFields"
 import { createLoan } from "@/services/loanService"
-import { getCustomerNames } from "@/services/customerService"
 import type { Loan } from "@/types/loan"
 
 /** Shape used by this dashboard view (dummy data + newly created loans). */
@@ -111,34 +110,26 @@ export const Dashboard = () => {
   }
 
   const handleCreated = (loan: Loan) => {
-    // Dashboard pakai data contoh; pinjaman baru tetap ditampilkan di daftar.
-    void getCustomerNames([loan.customerId])
-      .then((names) => {
-        return {
-          id: loan.id,
-          backendId: loan.id,
-          borrowerName: names[loan.customerId] ?? "Nasabah baru",
-          loanAmount: Number(loan.amount),
-          tenorMonths: loan.tenorMonths,
-          interestRate: loan.interestRate,
-          status: loan.status,
-          disbursementDate: "-",
-          collateral: {
-            id: "-",
-            type: "Belum didaftarkan",
-            estimatedValue: 0,
-            documentNo: "-",
-          },
-        }
-      })
-      .then((created) => {
-        setLoans((prev) => [created, ...prev])
-        setSelectedLoan(created)
-        setNotice(`Pinjaman ${created.id} berhasil dibuat dengan status ${created.status}.`)
-      })
-      .catch(() => {
-        setNotice(`Pinjaman ${loan.id} berhasil dibuat. Segarkan halaman untuk melihat datanya.`)
-      })
+    // Backend sudah mengirim loanNumber + customerName di response create.
+    const created: DashboardLoan = {
+      id: loan.loanNumber || loan.id,
+      backendId: loan.id,
+      borrowerName: loan.customerName || "Nasabah baru",
+      loanAmount: Number(loan.amount),
+      tenorMonths: loan.tenorMonths,
+      interestRate: loan.interestRate,
+      status: loan.status,
+      disbursementDate: "-",
+      collateral: {
+        id: "-",
+        type: "Belum didaftarkan",
+        estimatedValue: 0,
+        documentNo: "-",
+      },
+    }
+    setLoans((prev) => [created, ...prev])
+    setSelectedLoan(created)
+    setNotice(`Pinjaman ${created.id} berhasil dibuat dengan status ${created.status}.`)
   }
 
   return (

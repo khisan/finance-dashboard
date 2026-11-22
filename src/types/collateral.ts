@@ -3,6 +3,8 @@ import type { CollateralType } from "./enums"
 export interface Collateral {
   id: string
   loanId: string
+  loanNumber: string
+  customerName: string
   type: CollateralType
   documentNumber: string
   marketValue: number
@@ -15,6 +17,8 @@ export interface Collateral {
 export interface CollateralListItem {
   id: string
   loanId: string
+  loanNumber: string
+  customerName: string
   type: CollateralType
   documentNumber: string
   marketValue: number

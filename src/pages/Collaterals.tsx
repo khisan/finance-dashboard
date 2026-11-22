@@ -4,7 +4,7 @@ import { CreateModal } from "@/components/CreateModal"
 import { RowActions } from "@/components/RowActions"
 import { collateralCreateFields } from "@/forms/createFields"
 import { useAsync } from "@/hooks/useApi"
-import { formatIDR } from "@/lib/format"
+import { formatIDR, loanLabel } from "@/lib/format"
 import { toFormValues } from "@/lib/formValues"
 import {
   createCollateral,
@@ -70,7 +70,18 @@ export default function CollateralsPage() {
       render: (r) =>
         formatIDR((r as { pledgedValue: number }).pledgedValue),
     },
-    { key: "loanId", header: "Pinjaman" },
+    {
+      key: "loanId",
+      header: "Pinjaman",
+      render: (r) => {
+        const row = r as CollateralListItem
+        return (
+          <span title={row.loanId} className="whitespace-nowrap">
+            {loanLabel(row)}
+          </span>
+        )
+      },
+    },
   ]
 
   return (
@@ -86,7 +97,7 @@ export default function CollateralsPage() {
         loading={loading}
         error={error}
         onRetry={refetch}
-        searchKeys={["documentNumber", "type", "loanId"]}
+        searchKeys={["documentNumber", "type", "loanNumber", "customerName"]}
         pageSize={8}
         emptyMessage="Belum ada agunan. Tambah pinjaman dulu, lalu daftarkan agunannya."
         title="Agunan"

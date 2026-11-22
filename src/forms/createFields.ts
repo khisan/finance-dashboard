@@ -12,7 +12,7 @@ export async function loanOptions(): Promise<SelectOption[]> {
   const rows = await getLoans()
   return rows.map((l) => ({
     value: l.id,
-    label: `${l.id} — ${l.customerName}`,
+    label: `${l.loanNumber || l.id} — ${l.customerName || "Nasabah"}`,
   }))
 }
 

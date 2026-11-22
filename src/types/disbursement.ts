@@ -3,6 +3,8 @@ import type { DisbursementStatus } from "./enums"
 export interface DisbursementListItem {
   id: string
   loanId: string
+  loanNumber: string
+  customerName: string
   disbursementNumber: string
   amount: number
   bankName: string
@@ -14,6 +16,8 @@ export interface DisbursementListItem {
 export interface Disbursement {
   id: string
   loanId: string
+  loanNumber: string
+  customerName: string
   disbursementNumber: string
   amount: number
   bankName: string

@@ -1,7 +1,10 @@
 import { apiGet, apiPost, apiPut } from "./http"
 import type { Guarantor, GuarantorListItem } from "@/types/guarantor"
 
-export type GuarantorCreateInput = Omit<Guarantor, "id" | "createdAt" | "updatedAt">
+export type GuarantorCreateInput = Omit<
+  Guarantor,
+  "id" | "loanNumber" | "customerName" | "createdAt" | "updatedAt"
+>
 
 export async function getGuarantors(): Promise<GuarantorListItem[]> {
   return apiGet<GuarantorListItem[]>("/guarantors")

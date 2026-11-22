@@ -1,5 +1,5 @@
 import { apiGet, apiPost, apiPut } from "./http"
-import { getCustomerById, getCustomerNames } from "./customerService"
+import { getCustomerById } from "./customerService"
 import { getCollateralsByLoanId } from "./collateralService"
 import { getGuarantorsByLoanId } from "./guarantorService"
 import { getInvoicesByLoanId } from "./invoiceService"
@@ -13,27 +13,21 @@ export interface LoanCreateInput {
   tenorMonths: number
 }
 
-/** LoanResponse backend tidak punya customerName — ambil dari /api/customers/{id}. */
-async function withCustomerNames(loans: LoanListItem[]): Promise<LoanListItem[]> {
-  if (loans.length === 0) return loans
-  const names = await getCustomerNames(loans.map((l) => l.customerId))
-  return loans.map((loan) => ({
-    ...loan,
-    customerName: names[loan.customerId] ?? loan.customerName ?? loan.customerId,
-  }))
-}
-
+/**
+ * LoanResponse sudah mengirim loanNumber + customerName dari backend,
+ * jadi tidak perlu enrichment client-side lagi.
+ */
 export async function getLoans(): Promise<LoanListItem[]> {
-  return withCustomerNames(await apiGet<LoanListItem[]>("/loans"))
+  return apiGet<LoanListItem[]>("/loans")
 }
 
 export async function getLoansByCustomerId(customerId: string): Promise<LoanListItem[]> {
-  return withCustomerNames(await apiGet<LoanListItem[]>(`/loans/customer/${customerId}`))
+  return apiGet<LoanListItem[]>(`/loans/customer/${customerId}`)
 }
 
 export async function getLoanById(id: string): Promise<LoanListItem | null> {
   const loan = await apiGet<Loan>(`/loans/${encodeURIComponent(id)}`)
-  return (await withCustomerNames([loan as LoanListItem]))[0]
+  return loan ?? null
 }
 
 /**
@@ -54,7 +48,7 @@ export async function getLoanDetail(id: string): Promise<LoanDetail | null> {
 
   return {
     ...loan,
-    borrowerName: customer?.fullName ?? loan.customerName ?? loan.customerId,
+    borrowerName: customer?.fullName ?? loan.customerName,
     customerEmail: customer?.email ?? "",
     customerAddress: customer?.address ?? "",
     collateral: collaterals.length > 0 ? collaterals[0] : null,

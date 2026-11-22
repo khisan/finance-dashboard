@@ -11,7 +11,9 @@ import type { DisbursementListItem } from "./disbursement"
 
 export interface Loan {
   id: string
+  loanNumber: string
   customerId: string
+  customerName: string
   amount: number
   interestRate: number
   tenorMonths: number
@@ -22,6 +24,7 @@ export interface Loan {
 
 export interface LoanListItem {
   id: string
+  loanNumber: string
   customerName: string
   customerId: string
   amount: number

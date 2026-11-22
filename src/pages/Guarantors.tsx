@@ -4,6 +4,7 @@ import { CreateModal } from "@/components/CreateModal"
 import { RowActions } from "@/components/RowActions"
 import { guarantorCreateFields } from "@/forms/createFields"
 import { useAsync } from "@/hooks/useApi"
+import { loanLabel } from "@/lib/format"
 import { toFormValues } from "@/lib/formValues"
 import {
   createGuarantor,
@@ -40,7 +41,18 @@ export default function GuarantorsPage() {
     { key: "relationship", header: "Hubungan" },
     { key: "email", header: "Email" },
     { key: "phoneNumber", header: "Telepon" },
-    { key: "loanId", header: "Pinjaman" },
+    {
+      key: "loanId",
+      header: "Pinjaman",
+      render: (r) => {
+        const row = r as GuarantorListItem
+        return (
+          <span title={row.loanId} className="whitespace-nowrap">
+            {loanLabel(row)}
+          </span>
+        )
+      },
+    },
   ]
 
   return (
@@ -56,7 +68,7 @@ export default function GuarantorsPage() {
         loading={loading}
         error={error}
         onRetry={refetch}
-        searchKeys={["fullName", "email", "relationship", "loanId"]}
+        searchKeys={["fullName", "email", "relationship", "loanNumber", "customerName"]}
         pageSize={8}
         emptyMessage="Belum ada penjamin. Tambah pinjaman dulu, lalu daftarkan penjaminnya."
         title="Penjamin"

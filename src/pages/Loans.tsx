@@ -31,8 +31,11 @@ export default function LoansPage() {
   }
 
   const columns = [
-    { key: "id", header: "ID" },
-    { key: "customerName", header: "Nasabah" },
+    { key: "loanNumber", header: "No. Pinjaman" },
+    {
+      key: "customerName",
+      header: "Nasabah",
+    },
     {
       key: "amount",
       header: "Jumlah",
@@ -69,7 +72,7 @@ export default function LoansPage() {
         loading={loading}
         error={error}
         onRetry={refetch}
-        searchKeys={["id", "customerName"]}
+        searchKeys={["loanNumber", "customerName", "id"]}
         pageSize={8}
         emptyMessage="Belum ada pinjaman. Tambah nasabah dulu, lalu buat pinjaman."
         title="Pinjaman"

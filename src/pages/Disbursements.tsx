@@ -3,7 +3,7 @@ import { Button } from "@/components/ui"
 import { CreateModal } from "@/components/CreateModal"
 import { RowActions } from "@/components/RowActions"
 import { disbursementCreateFields } from "@/forms/createFields"
-import { formatDate, formatIDR } from "@/lib/format"
+import { formatDate, formatIDR, loanLabel } from "@/lib/format"
 import { toFormValues } from "@/lib/formValues"
 import { useAsync } from "@/hooks/useApi"
 import {
@@ -53,7 +53,18 @@ export default function DisbursementsPage() {
   const columns = [
     { key: "id", header: "ID" },
     { key: "disbursementNumber", header: "Nomor" },
-    { key: "loanId", header: "Pinjaman" },
+    {
+      key: "loanId",
+      header: "Pinjaman",
+      render: (r) => {
+        const row = r as DisbursementListItem
+        return (
+          <span title={row.loanId} className="whitespace-nowrap">
+            {loanLabel(row)}
+          </span>
+        )
+      },
+    },
     {
       key: "amount",
       header: "Nominal",
@@ -96,7 +107,7 @@ export default function DisbursementsPage() {
         loading={loading}
         error={error}
         onRetry={refetch}
-        searchKeys={["disbursementNumber", "loanId", "bankName"]}
+        searchKeys={["disbursementNumber", "loanNumber", "customerName", "bankName"]}
         pageSize={8}
         emptyMessage="Belum ada pencairan. Tambah pinjaman dulu, lalu catat pencairannya."
         title="Pencairan"
