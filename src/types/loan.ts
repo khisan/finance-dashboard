@@ -4,6 +4,10 @@ import type {
   InvoiceStatus,
   LoanStatus,
 } from "./enums"
+import type { CollateralListItem } from "./collateral"
+import type { GuarantorListItem } from "./guarantor"
+import type { InvoiceListItem } from "./invoice"
+import type { DisbursementListItem } from "./disbursement"
 
 export interface Loan {
   id: string
@@ -31,10 +35,10 @@ export interface LoanDetail extends LoanListItem {
   borrowerName: string
   customerEmail: string
   customerAddress: string
-  collateral: CollateralItem | null
-  guarantors: GuarantorItem[]
-  invoices: InvoiceItem[]
-  disbursements: DisbursementItem[]
+  collateral: CollateralListItem | null
+  guarantors: GuarantorListItem[]
+  invoices: InvoiceListItem[]
+  disbursements: DisbursementListItem[]
 }
 
 export interface CollateralItem {

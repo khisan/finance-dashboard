@@ -1,4 +1,4 @@
-import { apiGet, apiPost } from "./http"
+import { apiGet, apiPost, apiPut } from "./http"
 import type { Guarantor, GuarantorListItem } from "@/types/guarantor"
 
 export type GuarantorCreateInput = Omit<Guarantor, "id" | "createdAt" | "updatedAt">
@@ -12,10 +12,17 @@ export async function getGuarantorsByLoanId(loanId: string): Promise<GuarantorLi
 }
 
 export async function getGuarantorById(id: string): Promise<Guarantor | null> {
-  const list = await apiGet<Guarantor[]>("/guarantors")
-  return list.find((g) => g.id === id) ?? null
+  const result = await apiGet<Guarantor>(`/guarantors/${encodeURIComponent(id)}`)
+  return result ?? null
 }
 
 export async function createGuarantor(body: GuarantorCreateInput): Promise<Guarantor> {
   return apiPost<Guarantor>("/guarantors", body)
+}
+
+export async function updateGuarantor(
+  id: string,
+  body: GuarantorCreateInput,
+): Promise<Guarantor> {
+  return apiPut<Guarantor>(`/guarantors/${encodeURIComponent(id)}`, body)
 }

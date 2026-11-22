@@ -12,6 +12,7 @@ import Invoices from "./pages/Invoices"
 import Disbursements from "./pages/Disbursements"
 import Users from "./pages/Users"
 import Settings from "./pages/Settings"
+import ResourceDetail from "./pages/ResourceDetail"
 
 function App() {
   return (
@@ -30,6 +31,13 @@ function App() {
             <Route path="disbursements" element={<Disbursements />} />
             <Route path="users" element={<Users />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="customers/:id" element={<ResourceDetail resource="customers" />} />
+            <Route path="loans/:id" element={<ResourceDetail resource="loans" />} />
+            <Route path="collaterals/:id" element={<ResourceDetail resource="collaterals" />} />
+            <Route path="guarantors/:id" element={<ResourceDetail resource="guarantors" />} />
+            <Route path="invoices/:id" element={<ResourceDetail resource="invoices" />} />
+            <Route path="disbursements/:id" element={<ResourceDetail resource="disbursements" />} />
+            <Route path="users/:id" element={<ResourceDetail resource="users" />} />
           </Route>
         </Route>
         <Route path="*" element={<Navigate to="/login" replace />} />

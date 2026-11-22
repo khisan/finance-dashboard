@@ -1,10 +1,17 @@
 import { useState } from "react"
 import { Button } from "@/components/ui"
 import { CreateModal } from "@/components/CreateModal"
+import { RowActions } from "@/components/RowActions"
 import { invoiceCreateFields } from "@/forms/createFields"
 import { formatDate, formatIDR } from "@/lib/format"
+import { toFormValues } from "@/lib/formValues"
 import { useAsync } from "@/hooks/useApi"
-import { createInvoice, getInvoices } from "@/services/invoiceService"
+import {
+  createInvoice,
+  getInvoiceById,
+  getInvoices,
+  updateInvoice,
+} from "@/services/invoiceService"
 import type { InvoiceListItem } from "@/types/invoice"
 import type { InvoiceStatus } from "@/types/enums"
 import { DataTable } from "@/components/DataTable"
@@ -25,10 +32,23 @@ const STATUS_CLASS: Record<InvoiceStatus, string> = {
 
 export default function InvoicesPage() {
   const [open, setOpen] = useState(false)
+  const [editing, setEditing] = useState<{ id: string; values: Record<string, string> } | null>(null)
+  const [editError, setEditError] = useState<string | null>(null)
   const { data, loading, error, refetch } = useAsync<InvoiceListItem[]>(
     "invoices",
     getInvoices,
   )
+
+  const openEdit = async (id: string) => {
+    setEditError(null)
+    try {
+      const detail = await getInvoiceById(id)
+      if (!detail) throw new Error("Data faktur tidak ditemukan.")
+      setEditing({ id, values: toFormValues(invoiceCreateFields, detail) })
+    } catch (err) {
+      setEditError(err instanceof Error ? err.message : "Gagal memuat data faktur.")
+    }
+  }
 
   const columns = [
     { key: "id", header: "ID" },
@@ -64,6 +84,11 @@ export default function InvoicesPage() {
 
   return (
     <>
+      {editError ? (
+        <p className="mb-3 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+          {editError}
+        </p>
+      ) : null}
       <DataTable<InvoiceListItem>
         columns={columns}
         rows={data ?? []}
@@ -76,6 +101,12 @@ export default function InvoicesPage() {
         title="Faktur Tagihan"
         subtitle="Data invoice / faktur tagihan"
         action={<Button onClick={() => setOpen(true)}>+ Tambah Faktur</Button>}
+        rowActions={(r) => (
+          <RowActions
+            detailPath={`/invoices/${encodeURIComponent(r.id)}`}
+            onEdit={() => void openEdit(r.id)}
+          />
+        )}
       />
       {open && (
         <CreateModal
@@ -85,6 +116,23 @@ export default function InvoicesPage() {
           onSubmit={createInvoice}
           onSuccess={() => refetch()}
           onClose={() => setOpen(false)}
+        />
+      )}
+      {editing && (
+        <CreateModal
+          title="Edit Faktur"
+          subtitle="Total tetap dihitung ulang backend dari pokok + bunga + denda."
+          fields={invoiceCreateFields}
+          initialValues={editing.values}
+          submitLabel="Simpan Perubahan"
+          onSubmit={(payload) =>
+            updateInvoice(editing.id, payload as unknown as Parameters<typeof updateInvoice>[1])
+          }
+          onSuccess={() => {
+            setEditing(null)
+            refetch()
+          }}
+          onClose={() => setEditing(null)}
         />
       )}
     </>

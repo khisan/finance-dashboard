@@ -1,4 +1,4 @@
-import { apiGet, apiPost } from "./http"
+import { apiGet, apiPost, apiPut } from "./http"
 import type { Customer, CustomerListItem, CustomerForm } from "@/types/customer"
 
 const nameCache = new Map<string, string>()
@@ -7,7 +7,7 @@ export async function getCustomers(): Promise<CustomerListItem[]> {
   return apiGet<CustomerListItem[]>("/customers")
 }
 
-/** GET /api/customers/{id} — dipakai untuk melengkapi nama di tabel pinjaman. */
+/** GET /api/customers/{id} — dipakai detail dan pelengkap nama di tabel pinjaman. */
 export async function getCustomerById(id: string): Promise<Customer | null> {
   try {
     const customer = await apiGet<Customer>(`/customers/${encodeURIComponent(id)}`)
@@ -41,4 +41,11 @@ export async function getCustomerNames(ids: string[]): Promise<Record<string, st
 
 export async function createCustomer(body: CustomerForm): Promise<Customer> {
   return apiPost<Customer>("/customers", body)
+}
+
+/** PUT /api/customers/{id}. Catatan: backend mengabaikan identityNumber saat update. */
+export async function updateCustomer(id: string, body: CustomerForm): Promise<Customer> {
+  const result = await apiPut<Customer>(`/customers/${encodeURIComponent(id)}`, body)
+  if (body.fullName) nameCache.set(id, body.fullName)
+  return result
 }

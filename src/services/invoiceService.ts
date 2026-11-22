@@ -1,4 +1,4 @@
-import { apiGet, apiPost } from "./http"
+import { apiGet, apiPost, apiPut } from "./http"
 import type { Invoice, InvoiceListItem } from "@/types/invoice"
 
 export type InvoiceCreateInput = Pick<
@@ -21,10 +21,14 @@ export async function getInvoicesByLoanId(loanId: string): Promise<InvoiceListIt
 }
 
 export async function getInvoiceById(id: string): Promise<Invoice | null> {
-  const list = await apiGet<Invoice[]>("/invoices")
-  return list.find((i) => i.id === id) ?? null
+  const result = await apiGet<Invoice>(`/invoices/${encodeURIComponent(id)}`)
+  return result ?? null
 }
 
 export async function createInvoice(body: InvoiceCreateInput): Promise<Invoice> {
   return apiPost<Invoice>("/invoices", body)
+}
+
+export async function updateInvoice(id: string, body: InvoiceCreateInput): Promise<Invoice> {
+  return apiPut<Invoice>(`/invoices/${encodeURIComponent(id)}`, body)
 }

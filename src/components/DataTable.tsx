@@ -22,6 +22,8 @@ export interface DataTableProps<T> {
   subtitle?: string
   /** Header action, e.g. a "Tambah" button for create flows. */
   action?: ReactNode
+  /** Per-row buttons, typically "Detail" and "Edit". */
+  rowActions?: (row: T) => ReactNode
 }
 
 /**
@@ -41,6 +43,7 @@ export function DataTable<T extends object>({
   title,
   subtitle,
   action,
+  rowActions,
 }: DataTableProps<T>) {
   const [q, setQ] = useState("")
   const [page, setPage] = useState(1)
@@ -136,6 +139,7 @@ export function DataTable<T extends object>({
                     {c.header}
                   </th>
                 ))}
+                {rowActions ? <th className="px-4 py-3 font-medium">Aksi</th> : null}
               </tr>
             </thead>
             <tbody>
@@ -151,6 +155,11 @@ export function DataTable<T extends object>({
                         : String((row as Record<string, unknown>)[c.key] ?? "—")}
                     </td>
                   ))}
+                  {rowActions ? (
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">{rowActions(row)}</div>
+                    </td>
+                  ) : null}
                 </tr>
               ))}
             </tbody>

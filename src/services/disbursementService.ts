@@ -1,4 +1,4 @@
-import { apiGet, apiPost } from "./http"
+import { apiGet, apiPost, apiPut } from "./http"
 import type { Disbursement, DisbursementListItem } from "@/types/disbursement"
 
 export type DisbursementCreateInput = Pick<
@@ -20,12 +20,19 @@ export async function getDisbursementsByLoanId(loanId: string): Promise<Disburse
 }
 
 export async function getDisbursementById(id: string): Promise<Disbursement | null> {
-  const list = await apiGet<Disbursement[]>("/disbursements")
-  return list.find((d) => d.id === id) ?? null
+  const result = await apiGet<Disbursement>(`/disbursements/${encodeURIComponent(id)}`)
+  return result ?? null
 }
 
 export async function createDisbursement(
   body: DisbursementCreateInput,
 ): Promise<Disbursement> {
   return apiPost<Disbursement>("/disbursements", body)
+}
+
+export async function updateDisbursement(
+  id: string,
+  body: DisbursementCreateInput,
+): Promise<Disbursement> {
+  return apiPut<Disbursement>(`/disbursements/${encodeURIComponent(id)}`, body)
 }

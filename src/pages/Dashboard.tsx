@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { CreateModal } from "@/components/CreateModal"
 import { loanCreateFields } from "@/forms/createFields"
 import { createLoan } from "@/services/loanService"
@@ -8,6 +9,8 @@ import type { Loan } from "@/types/loan"
 /** Shape used by this dashboard view (dummy data + newly created loans). */
 interface DashboardLoan {
   id: string
+  /** UUID from backend; dummy rows don't have one. */
+  backendId?: string
   borrowerName: string
   loanAmount: number
   tenorMonths: number
@@ -75,9 +78,11 @@ const initialLoans: DashboardLoan[] = [
 ]
 
 export const Dashboard = () => {
+  const navigate = useNavigate()
   const [loans, setLoans] = useState<DashboardLoan[]>(initialLoans)
   const [selectedLoan, setSelectedLoan] = useState<DashboardLoan>(initialLoans[0])
   const [open, setOpen] = useState(false)
+  const [detailLoan, setDetailLoan] = useState<DashboardLoan | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
 
   // Helper Format Rupiah
@@ -111,6 +116,7 @@ export const Dashboard = () => {
       .then((names) => {
         return {
           id: loan.id,
+          backendId: loan.id,
           borrowerName: names[loan.customerId] ?? "Nasabah baru",
           loanAmount: Number(loan.amount),
           tenorMonths: loan.tenorMonths,
@@ -258,7 +264,15 @@ export const Dashboard = () => {
                       </span>
                     </td>
                     <td className="py-4 text-right">
-                      <button className="text-xs font-semibold text-blue-600 hover:underline">
+                      <button
+                        type="button"
+                        data-action="view-detail"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setDetailLoan(loan)
+                        }}
+                        className="text-xs font-semibold text-blue-600 hover:underline"
+                      >
                         View Detail →
                       </button>
                     </td>
@@ -352,6 +366,99 @@ export const Dashboard = () => {
           onSuccess={handleCreated}
           onClose={() => setOpen(false)}
         />
+      )}
+
+      {detailLoan && (
+        <div
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/40 p-4 py-10"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) setDetailLoan(null)
+          }}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Detail pinjaman ${detailLoan.id}`}
+            className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white shadow-xl"
+          >
+            <div className="flex items-start justify-between border-b border-slate-200 px-5 py-4">
+              <div>
+                <h2 className="text-lg font-semibold text-slate-900">
+                  Detail Pinjaman {detailLoan.id}
+                </h2>
+                <p className="mt-0.5 text-sm text-slate-500">{detailLoan.borrowerName}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setDetailLoan(null)}
+                aria-label="Tutup"
+                className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+              >
+                ✕
+              </button>
+            </div>
+            <dl className="grid grid-cols-1 gap-4 px-5 py-5 sm:grid-cols-2">
+              <div>
+                <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">Jumlah</dt>
+                <dd className="mt-1 text-sm font-medium text-slate-900">
+                  {formatRupiah(detailLoan.loanAmount)}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">Tenor & Bunga</dt>
+                <dd className="mt-1 text-sm text-slate-900">
+                  {detailLoan.tenorMonths} bulan · {detailLoan.interestRate}%
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">Status</dt>
+                <dd className="mt-1 text-sm text-slate-900">{detailLoan.status}</dd>
+              </div>
+              <div>
+                <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">Agunan</dt>
+                <dd className="mt-1 text-sm text-slate-900">{detailLoan.collateral.type}</dd>
+              </div>
+              <div className="sm:col-span-2">
+                <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">No. Dokumen Agunan</dt>
+                <dd className="mt-1 text-sm text-slate-900">{detailLoan.collateral.documentNo}</dd>
+              </div>
+              {detailLoan.disbursementDate ? (
+                <div>
+                  <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">Tanggal Pencairan</dt>
+                  <dd className="mt-1 text-sm text-slate-900">{detailLoan.disbursementDate}</dd>
+                </div>
+              ) : null}
+              {detailLoan.settlementDate ? (
+                <div>
+                  <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">Tanggal Pelunasan</dt>
+                  <dd className="mt-1 text-sm text-slate-900">{detailLoan.settlementDate}</dd>
+                </div>
+              ) : null}
+            </dl>
+            <div className="flex justify-end gap-2 border-t border-slate-200 px-5 py-4">
+              <button
+                type="button"
+                onClick={() => setDetailLoan(null)}
+                className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+              >
+                Tutup
+              </button>
+              {detailLoan.backendId ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const backendId = detailLoan.backendId
+                    setDetailLoan(null)
+                    if (backendId) navigate(`/loans/${backendId}`)
+                  }}
+                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+                >
+                  Buka Halaman Detail
+                </button>
+              ) : null}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

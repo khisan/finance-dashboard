@@ -40,6 +40,9 @@ export interface CreateModalProps<T, P> {
   onClose: () => void
   onSubmit: (payload: P) => Promise<T>
   onSuccess?: (result: T) => void
+  /** Isi awal untuk mode edit ( meng-override defaultValue ). */
+  initialValues?: Record<string, string | number | null | undefined>
+  submitLabel?: string
 }
 
 const inputClass =
@@ -76,12 +79,18 @@ export function CreateModal<T, P = Record<string, unknown>>({
   onClose,
   onSubmit,
   onSuccess,
+  initialValues,
+  submitLabel = "Simpan",
 }: CreateModalProps<T, P>) {
   const initial = useMemo(() => {
     const values: Record<string, string> = {}
-    for (const field of fields) values[field.name] = String(field.defaultValue ?? "")
+    for (const field of fields) {
+      const fromRecord = initialValues?.[field.name]
+      const raw = fromRecord !== undefined ? fromRecord : field.defaultValue
+      values[field.name] = raw == null ? "" : String(raw)
+    }
     return values
-  }, [fields])
+  }, [fields, initialValues])
 
   const [values, setValues] = useState<Record<string, string>>(initial)
   const [options, setOptions] = useState<Record<string, SelectOption[]>>({})
@@ -283,7 +292,7 @@ export function CreateModal<T, P = Record<string, unknown>>({
               className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-60"
             >
               {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-              {submitting ? "Menyimpan..." : "Simpan"}
+              {submitting ? "Menyimpan..." : submitLabel}
             </button>
           </div>
         </form>

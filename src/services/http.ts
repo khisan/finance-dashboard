@@ -30,6 +30,12 @@ export async function apiPost<T>(path: string, body: unknown): Promise<T> {
   return unwrap<T>(response)
 }
 
+/** PUT wrapper for edit flows — same envelope, full-body replace. */
+export async function apiPut<T>(path: string, body: unknown): Promise<T> {
+  const response = await api.put<ApiPayload<T>>(path, body)
+  return unwrap<T>(response)
+}
+
 /** Normalize axios/network errors into a short user-facing message. */
 export function getErrorMessage(error: unknown): string {
   // Axios errors contain the backend message in response.data.message —

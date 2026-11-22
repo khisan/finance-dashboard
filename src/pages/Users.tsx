@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from "react"
+import { Link } from "react-router-dom"
 import { Button, Card, EmptyState, PageHeader, SearchInput } from "@/components/ui"
 import { CreateModal } from "@/components/CreateModal"
 import { userCreateFields } from "@/forms/createFields"
@@ -70,11 +71,24 @@ export default function UsersPage() {
                 <span className="text-stone-500">Role</span>
                 <span className="font-medium text-stone-900 capitalize">{data.role}</span>
               </div>
+              <div className="flex justify-end pt-2">
+                <Link
+                  to={`/users/${encodeURIComponent(data.email)}`}
+                  data-action="detail"
+                  className="rounded-lg border border-stone-200 px-3 py-1.5 text-xs font-semibold text-blue-600 hover:bg-blue-50"
+                >
+                  Lihat Detail
+                </Link>
+              </div>
             </div>
           )}
           {!loading && !data && !error && (
             <EmptyState title="Pengguna tidak ditemukan" description="Coba email lain." />
           )}
+          <p className="text-xs text-stone-400">
+            Catatan: backend hanya menyediakan GET by email & POST untuk user, belum ada endpoint
+            update — tombol Edit tidak tersedia di halaman detail.
+          </p>
         </div>
       </Card>
       {open && (
