@@ -1,0 +1,55 @@
+#!/usr/bin/env sh
+# prepare-commit-msg: prefill the commit message BEFORE the editor opens,
+# for `git commit` (no -m). Based on auto-commit engine (scripts/auto-commit.mjs).
+#
+# Conservative policy (matches loan-system semantics, never destroy user work):
+#   - skip merge/squash/amend/-c/-C (git provides its own message):
+#     $2 in {merge, squash, commit}
+#   - from -m/-F/-C/-c (source == "message"): act ONLY if the file content is
+#     exactly AUTO or AUTO:...; otherwise leave the message alone
+#   - plain `git commit` (source == ""): fill while file is empty or comment-only
+#   - rebase/cherry-pick in progress: skip
+#   - never git add anything
+set -u
+
+msg_file=${1:-}
+[ -n "$msg_file" ] || exit 0
+source=${2:-}
+
+cd "$(git rev-parse --show-toplevel 2>/dev/null)" || exit 0
+
+# merge / squash / commit (amend, -c, -C) -- git owns the message
+case "$source" in
+  merge|squash|commit) exit 0 ;;
+esac
+
+# from -m/-F/-C/-c (source == "message"): only when the message is exactly AUTO
+if [ "$source" = "message" ]; then
+  first=$(head -n 1 "$msg_file" 2>/dev/null)
+  case "$first" in
+    AUTO|AUTO:*|AUTO:*) : ;;
+    *) exit 0 ;;
+  esac
+fi
+
+# rebase/cherry-pick in progress: the repo owns the message
+if [ -n "$(git rev-parse --git-path REBASE_HEAD 2>/dev/null)" ] || \
+   [ -d "$(git rev-parse --git-path rebase-merge)" ] || \
+   [ -d "$(git rev-parse --git-path rebase-apply)" ] || \
+   [ -f "$(git rev-parse --git-path MERGE_HEAD 2>/dev/null)" ]; then
+  exit 0
+fi
+
+# fill only when the file is empty or comment-only
+if [ -s "$msg_file" ] && grep -Evq '^[[:space:]]*(#|$)' "$msg_file" 2>/dev/null; then
+  exit 0
+fi
+
+# deterministic heuristics, read-only mode (stage nothing)
+engine="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)/auto-commit.mjs"
+if [ -f "$engine" ]; then
+  msg=$(node "$engine" --message-only </dev/null 2>/dev/null) || msg=""
+  case "$msg" in ''|\#*) msg="chore: update staged files" ;; esac
+  printf '%s\n' "$msg" > "$msg_file"
+fi
+exit 0
