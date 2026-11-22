@@ -1,15 +1,18 @@
 import { useCallback, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
-import type { ReactNode } from "react"
-import { Button, StatusChip } from "@/components/ui"
+import { Button } from "@/components/ui"
 import { CreateModal, type FormField } from "@/components/CreateModal"
-import { DetailView, type DetailField, type DetailSection } from "@/components/DetailView"
+import {
+  DetailView,
+  type DetailField,
+  type DetailSection,
+} from "@/components/DetailView"
 import { useAsync } from "@/hooks/useApi"
-import { formatDate, formatIDR, loanLabel } from "@/lib/format"
+import { date, f, money, str, TYPE_LABEL } from "@/lib/detailFields"
+import { loanLabel } from "@/lib/format"
 import { toFormValues } from "@/lib/formValues"
 import {
   customerCreateFields,
-  loanCreateFields,
   collateralCreateFields,
   guarantorCreateFields,
   invoiceCreateFields,
@@ -17,11 +20,16 @@ import {
   userCreateFields,
 } from "@/forms/createFields"
 import { getCustomerById, updateCustomer } from "@/services/customerService"
-import { getLoanDetail, updateLoan } from "@/services/loanService"
-import { getCollateralById, updateCollateral } from "@/services/collateralService"
+import {
+  getCollateralById,
+  updateCollateral,
+} from "@/services/collateralService"
 import { getGuarantorById, updateGuarantor } from "@/services/guarantorService"
 import { getInvoiceById, updateInvoice } from "@/services/invoiceService"
-import { getDisbursementById, updateDisbursement } from "@/services/disbursementService"
+import {
+  getDisbursementById,
+  updateDisbursement,
+} from "@/services/disbursementService"
 import { getUserByEmail } from "@/services/userService"
 import type { CollateralType } from "@/types/enums"
 
@@ -40,38 +48,19 @@ interface ResourceConfig {
   sections?: (record: DetailRecord) => DetailSection[]
 }
 
-const str = (value: unknown): string =>
-  value == null || value === "" ? "—" : String(value)
-
-const money = (value: unknown): ReactNode =>
-  typeof value === "number" || typeof value === "string"
-    ? formatIDR(value as number | string)
-    : "—"
-
-const date = (value: unknown): ReactNode => formatDate(value as string | null)
-
-const f = (label: string, value: ReactNode, wide = false): DetailField => ({
-  label,
-  value,
-  wide,
-})
-
-const TYPE_LABEL: Record<CollateralType, string> = {
-  REAL_ESTATE: "Tanah/Bangunan",
-  VEHICLE: "Kendaraan",
-  DEPOSIT: "Deposit",
-  GOLD: "Emas",
-  OTHER: "Lainnya",
-}
-
 const configs: Record<string, ResourceConfig> = {
   customers: {
     label: "Nasabah",
     listPath: "/customers",
     canEdit: true,
     editFields: customerCreateFields,
-    getDetail: async (id) => (await getCustomerById(id)) as unknown as DetailRecord | null,
-    update: (id, body) => updateCustomer(id, body as unknown as Parameters<typeof updateCustomer>[1]),
+    getDetail: async (id) =>
+      (await getCustomerById(id)) as unknown as DetailRecord | null,
+    update: (id, body) =>
+      updateCustomer(
+        id,
+        body as unknown as Parameters<typeof updateCustomer>[1],
+      ),
     recordLabel: (r) => str(r.fullName),
     fields: (r) => [
       f("ID", str(r.id)),
@@ -84,89 +73,18 @@ const configs: Record<string, ResourceConfig> = {
       f("Diupdate", date(r.updatedAt)),
     ],
   },
-  loans: {
-    label: "Pinjaman",
-    listPath: "/loans",
-    canEdit: true,
-    editFields: loanCreateFields,
-    getDetail: async (id) => (await getLoanDetail(id)) as unknown as DetailRecord | null,
-    update: (id, body) => updateLoan(id, body as unknown as Parameters<typeof updateLoan>[1]),
-    recordLabel: (r) => str(r.loanNumber),
-    fields: (r) => [
-      f("No. Pinjaman", str(r.loanNumber)),
-      f("ID Pinjaman", str(r.id)),
-      f("Nasabah", str(r.borrowerName)),
-      f("Customer ID", str(r.customerId)),
-      f("Email Nasabah", str(r.customerEmail)),
-      f("Alamat Nasabah", str(r.customerAddress), true),
-      f("Jumlah Pinjaman", money(r.amount)),
-      f("Suku Bunga", `${str(r.interestRate)}%`),
-      f("Tenor", `${str(r.tenorMonths)} bulan`),
-      f("Status", <StatusChip status={str(r.status)} />),
-      f("Dibuat", date(r.createdAt)),
-    ],
-    sections: (r) => {
-      const collateral = r.collateral as DetailRecord | null
-      return [
-        {
-          title: "Agunan",
-          rows: collateral ? [collateral] : [],
-          emptyText: "Belum ada agunan untuk pinjaman ini.",
-          columns: [
-            { key: "documentNumber", header: "No. Dokumen", render: (x) => str(x.documentNumber) },
-            {
-              key: "type",
-              header: "Tipe",
-              render: (x) => TYPE_LABEL[x.type as CollateralType] ?? str(x.type),
-            },
-            { key: "marketValue", header: "Nilai Estimasi", render: (x) => money(x.marketValue) },
-            { key: "pledgedValue", header: "Nilai Jaminan", render: (x) => money(x.pledgedValue) },
-          ],
-        },
-        {
-          title: "Penjamin",
-          rows: (r.guarantors as DetailRecord[]) ?? [],
-          emptyText: "Belum ada penjamin untuk pinjaman ini.",
-          columns: [
-            { key: "fullName", header: "Nama", render: (x) => str(x.fullName) },
-            { key: "relationship", header: "Hubungan", render: (x) => str(x.relationship) },
-            { key: "email", header: "Email", render: (x) => str(x.email) },
-            { key: "phoneNumber", header: "Telepon", render: (x) => str(x.phoneNumber) },
-          ],
-        },
-        {
-          title: "Faktur Tagihan",
-          rows: (r.invoices as DetailRecord[]) ?? [],
-          emptyText: "Belum ada faktur untuk pinjaman ini.",
-          columns: [
-            { key: "invoiceNumber", header: "No. Faktur", render: (x) => str(x.invoiceNumber) },
-            { key: "installmentNumber", header: "Angsuran", render: (x) => str(x.installmentNumber) },
-            { key: "totalAmount", header: "Total", render: (x) => money(x.totalAmount) },
-            { key: "dueDate", header: "Jatuh Tempo", render: (x) => date(x.dueDate) },
-            { key: "status", header: "Status", render: (x) => str(x.status) },
-          ],
-        },
-        {
-          title: "Pencairan",
-          rows: (r.disbursements as DetailRecord[]) ?? [],
-          emptyText: "Belum ada pencairan untuk pinjaman ini.",
-          columns: [
-            { key: "disbursementNumber", header: "No. Pencairan", render: (x) => str(x.disbursementNumber) },
-            { key: "amount", header: "Nominal", render: (x) => money(x.amount) },
-            { key: "bankName", header: "Bank", render: (x) => str(x.bankName) },
-            { key: "status", header: "Status", render: (x) => str(x.status) },
-          ],
-        },
-      ]
-    },
-  },
   collaterals: {
     label: "Agunan",
     listPath: "/collaterals",
     canEdit: true,
     editFields: collateralCreateFields,
-    getDetail: async (id) => (await getCollateralById(id)) as unknown as DetailRecord | null,
-    update: (id, body) => updateCollateral(id, body as unknown as Parameters<typeof updateCollateral>[1]),
+    getDetail: async (id) =>
+      (await getCollateralById(id)) as unknown as DetailRecord | null,
+    update: (id, body) =>
+      updateCollateral(
+        id,
+        body as unknown as Parameters<typeof updateCollateral>[1],
+      ),
     recordLabel: (r) => str(r.documentNumber),
     fields: (r) => [
       f("ID", str(r.id)),
@@ -196,8 +114,13 @@ const configs: Record<string, ResourceConfig> = {
     listPath: "/guarantors",
     canEdit: true,
     editFields: guarantorCreateFields,
-    getDetail: async (id) => (await getGuarantorById(id)) as unknown as DetailRecord | null,
-    update: (id, body) => updateGuarantor(id, body as unknown as Parameters<typeof updateGuarantor>[1]),
+    getDetail: async (id) =>
+      (await getGuarantorById(id)) as unknown as DetailRecord | null,
+    update: (id, body) =>
+      updateGuarantor(
+        id,
+        body as unknown as Parameters<typeof updateGuarantor>[1],
+      ),
     recordLabel: (r) => str(r.fullName),
     fields: (r) => [
       f("ID", str(r.id)),
@@ -227,8 +150,10 @@ const configs: Record<string, ResourceConfig> = {
     listPath: "/invoices",
     canEdit: true,
     editFields: invoiceCreateFields,
-    getDetail: async (id) => (await getInvoiceById(id)) as unknown as DetailRecord | null,
-    update: (id, body) => updateInvoice(id, body as unknown as Parameters<typeof updateInvoice>[1]),
+    getDetail: async (id) =>
+      (await getInvoiceById(id)) as unknown as DetailRecord | null,
+    update: (id, body) =>
+      updateInvoice(id, body as unknown as Parameters<typeof updateInvoice>[1]),
     recordLabel: (r) => str(r.invoiceNumber),
     fields: (r) => [
       f("ID", str(r.id)),
@@ -261,8 +186,13 @@ const configs: Record<string, ResourceConfig> = {
     listPath: "/disbursements",
     canEdit: true,
     editFields: disbursementCreateFields,
-    getDetail: async (id) => (await getDisbursementById(id)) as unknown as DetailRecord | null,
-    update: (id, body) => updateDisbursement(id, body as unknown as Parameters<typeof updateDisbursement>[1]),
+    getDetail: async (id) =>
+      (await getDisbursementById(id)) as unknown as DetailRecord | null,
+    update: (id, body) =>
+      updateDisbursement(
+        id,
+        body as unknown as Parameters<typeof updateDisbursement>[1],
+      ),
     recordLabel: (r) => str(r.disbursementNumber),
     fields: (r) => [
       f("ID", str(r.id)),
@@ -294,7 +224,8 @@ const configs: Record<string, ResourceConfig> = {
     // Backend hanya punya GET by email & POST — tidak ada PUT /api/users/{id}.
     canEdit: false,
     editFields: userCreateFields,
-    getDetail: async (email) => (await getUserByEmail(email)) as unknown as DetailRecord,
+    getDetail: async (email) =>
+      (await getUserByEmail(email)) as unknown as DetailRecord,
     update: async () => {
       throw new Error("Backend belum menyediakan endpoint update user.")
     },
@@ -325,7 +256,13 @@ export default function ResourceDetail({ resource }: { resource: string }) {
   )
 
   if (!config) {
-    return <DetailView title="Halaman tidak ditemukan" subtitle={resource} fields={[]} />
+    return (
+      <DetailView
+        title="Halaman tidak ditemukan"
+        subtitle={resource}
+        fields={[]}
+      />
+    )
   }
 
   const record = data ?? undefined
@@ -346,7 +283,7 @@ export default function ResourceDetail({ resource }: { resource: string }) {
             <button
               type="button"
               onClick={() => navigate(config.listPath)}
-              className="rounded-lg border border-stone-200 px-3.5 py-2 text-sm font-semibold text-stone-700 hover:bg-stone-50"
+              className="rounded-lg border border-stone-200 px-3.5 py-2 text-sm font-semibold text-stone-700 hover:bg-stone-50 cursor-pointer"
             >
               Kembali
             </button>
