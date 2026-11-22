@@ -1,7 +1,10 @@
-import { Card } from "@/components/ui"
+import { useState } from "react"
+import { Button } from "@/components/ui"
+import { CreateModal } from "@/components/CreateModal"
+import { invoiceCreateFields } from "@/forms/createFields"
 import { formatDate, formatIDR } from "@/lib/format"
 import { useAsync } from "@/hooks/useApi"
-import { getInvoices } from "@/services/invoiceService"
+import { createInvoice, getInvoices } from "@/services/invoiceService"
 import type { InvoiceListItem } from "@/types/invoice"
 import type { InvoiceStatus } from "@/types/enums"
 import { DataTable } from "@/components/DataTable"
@@ -21,6 +24,7 @@ const STATUS_CLASS: Record<InvoiceStatus, string> = {
 }
 
 export default function InvoicesPage() {
+  const [open, setOpen] = useState(false)
   const { data, loading, error, refetch } = useAsync<InvoiceListItem[]>(
     "invoices",
     getInvoices,
@@ -59,7 +63,7 @@ export default function InvoicesPage() {
   ]
 
   return (
-    <Card className="overflow-hidden">
+    <>
       <DataTable<InvoiceListItem>
         columns={columns}
         rows={data ?? []}
@@ -68,10 +72,21 @@ export default function InvoicesPage() {
         onRetry={refetch}
         searchKeys={["invoiceNumber", "loanId"]}
         pageSize={8}
-        emptyMessage="Belum ada faktur tagihan. Data akan muncul setelah tersedia."
+        emptyMessage="Belum ada faktur. Tambah pinjaman dulu, lalu buat fakturnya."
         title="Faktur Tagihan"
         subtitle="Data invoice / faktur tagihan"
+        action={<Button onClick={() => setOpen(true)}>+ Tambah Faktur</Button>}
       />
-    </Card>
+      {open && (
+        <CreateModal
+          title="Tambah Faktur"
+          subtitle="Total otomatis dihitung backend dari pokok + bunga + denda."
+          fields={invoiceCreateFields}
+          onSubmit={createInvoice}
+          onSuccess={() => refetch()}
+          onClose={() => setOpen(false)}
+        />
+      )}
+    </>
   )
 }

@@ -48,6 +48,16 @@ export function StatCard({
   )
 }
 
+/** Primary action button (Tambah / Create). */
+export function Button({ className = "", ...rest }: React.ComponentProps<"button">) {
+  return (
+    <button
+      className={`inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-blue-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700 disabled:opacity-60 ${className}`}
+      {...rest}
+    />
+  )
+}
+
 /** Page header */
 export function PageHeader({ title, subtitle, action, className }: {
   title: string

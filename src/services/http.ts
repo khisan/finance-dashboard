@@ -24,9 +24,16 @@ export async function apiGet<T>(path: string): Promise<T> {
   return unwrap<T>(response)
 }
 
+/** POST wrapper for create flows — uses the same backend envelope as GET. */
+export async function apiPost<T>(path: string, body: unknown): Promise<T> {
+  const response = await api.post<ApiPayload<T>>(path, body)
+  return unwrap<T>(response)
+}
+
 /** Normalize axios/network errors into a short user-facing message. */
 export function getErrorMessage(error: unknown): string {
-  if (error instanceof Error) return error.message
+  // Axios errors contain the backend message in response.data.message —
+  // check that before the generic Error.message ("Request failed with status ...").
   if (error && typeof error === "object" && "response" in error) {
     const axiosError = error as AxiosError & {
       response?: { status?: number; data?: { message?: string } }
@@ -39,6 +46,7 @@ export function getErrorMessage(error: unknown): string {
     }
     return axiosError.response?.data?.message ?? "Request failed"
   }
+  if (error instanceof Error) return error.message
   if (error && typeof error === "object" && "request" in error) {
     return "No response from server. Check your connection."
   }

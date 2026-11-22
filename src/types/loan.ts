@@ -1,4 +1,9 @@
-import type { CollateralType, LoanStatus } from "./enums"
+import type {
+  CollateralType,
+  DisbursementStatus,
+  InvoiceStatus,
+  LoanStatus,
+} from "./enums"
 
 export interface Loan {
   id: string

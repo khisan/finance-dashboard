@@ -1,5 +1,14 @@
 import type { UserRole } from "./enums"
 
+export interface GuarantorListItem {
+  id: string
+  loanId: string
+  fullName: string
+  relationship: string
+  email: string
+  phoneNumber: string
+}
+
 export interface Guarantor {
   id: string
   loanId: string

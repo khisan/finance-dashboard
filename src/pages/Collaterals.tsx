@@ -1,7 +1,10 @@
-import { Card } from "@/components/ui"
+import { useState } from "react"
+import { Button } from "@/components/ui"
+import { CreateModal } from "@/components/CreateModal"
+import { collateralCreateFields } from "@/forms/createFields"
 import { useAsync } from "@/hooks/useApi"
 import { formatIDR } from "@/lib/format"
-import { getCollaterals } from "@/services/collateralService"
+import { createCollateral, getCollaterals } from "@/services/collateralService"
 import type { CollateralListItem } from "@/types/collateral"
 import type { CollateralType } from "@/types/enums"
 import { DataTable } from "@/components/DataTable"
@@ -15,6 +18,7 @@ const TYPE_LABEL: Record<CollateralType, string> = {
 }
 
 export default function CollateralsPage() {
+  const [open, setOpen] = useState(false)
   const { data, loading, error, refetch } = useAsync<CollateralListItem[]>(
     "collaterals",
     getCollaterals,
@@ -50,7 +54,7 @@ export default function CollateralsPage() {
   ]
 
   return (
-    <Card className="overflow-hidden">
+    <>
       <DataTable<CollateralListItem>
         columns={columns}
         rows={data ?? []}
@@ -59,10 +63,20 @@ export default function CollateralsPage() {
         onRetry={refetch}
         searchKeys={["documentNumber", "type", "loanId"]}
         pageSize={8}
-        emptyMessage="Belum ada agunan. Data akan muncul setelah tersedia."
+        emptyMessage="Belum ada agunan. Tambah pinjaman dulu, lalu daftarkan agunannya."
         title="Agunan"
         subtitle="Data collateral / agunan pinjaman"
+        action={<Button onClick={() => setOpen(true)}>+ Tambah Agunan</Button>}
       />
-    </Card>
+      {open && (
+        <CreateModal
+          title="Tambah Agunan"
+          fields={collateralCreateFields}
+          onSubmit={createCollateral}
+          onSuccess={() => refetch()}
+          onClose={() => setOpen(false)}
+        />
+      )}
+    </>
   )
 }

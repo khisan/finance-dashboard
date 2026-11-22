@@ -20,6 +20,8 @@ export interface DataTableProps<T> {
   emptyMessage?: string
   title?: string
   subtitle?: string
+  /** Header action, e.g. a "Tambah" button for create flows. */
+  action?: ReactNode
 }
 
 /**
@@ -27,7 +29,7 @@ export interface DataTableProps<T> {
  * Owns search input, client-side pagination, loading skeleton,
  * error + retry, and empty state. Pages own only fetch + columns.
  */
-export function DataTable<T extends Record<string, unknown>>({
+export function DataTable<T extends object>({
   columns,
   rows,
   loading,
@@ -38,6 +40,7 @@ export function DataTable<T extends Record<string, unknown>>({
   emptyMessage = "Belum ada data.",
   title,
   subtitle,
+  action,
 }: DataTableProps<T>) {
   const [q, setQ] = useState("")
   const [page, setPage] = useState(1)
@@ -49,7 +52,7 @@ export function DataTable<T extends Record<string, unknown>>({
     if (!ql) return rows
     return rows.filter((r) =>
       keys.some((k) =>
-        String((r as Record<string, unknown>)[k]).toLowerCase().includes(ql),
+        String((r as Record<string, unknown>)[k as string]).toLowerCase().includes(ql),
       ),
     )
   }, [rows, q, searchKeys])
@@ -57,9 +60,25 @@ export function DataTable<T extends Record<string, unknown>>({
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize))
   const paged = filtered.slice((page - 1) * pageSize, page * pageSize)
 
+  const header =
+    title || subtitle || action ? (
+      <div className="px-4 py-3 border-b border-stone-200">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            {title && <h1 className="text-lg font-semibold text-stone-900">{title}</h1>}
+            {subtitle && (
+              <p className="text-sm text-stone-500 mt-0.5">{subtitle}</p>
+            )}
+          </div>
+          {action ? <div className="shrink-0">{action}</div> : null}
+        </div>
+      </div>
+    ) : null
+
   if (loading) {
     return (
       <Card>
+        {header}
         <div className="space-y-3 p-4">
           {Array.from({ length: 5 }).map((_, i) => (
             <Skeleton key={i} className="h-4 w-full" />
@@ -72,6 +91,7 @@ export function DataTable<T extends Record<string, unknown>>({
   if (error && onRetry) {
     return (
       <Card>
+        {header}
         <ErrorState
           title={title ?? "Gagal memuat data"}
           description={error}
@@ -84,6 +104,7 @@ export function DataTable<T extends Record<string, unknown>>({
   if (!rows || rows.length === 0) {
     return (
       <Card>
+        {header}
         <EmptyState title={title ?? "Tidak ada data"} description={emptyMessage} />
       </Card>
     )
@@ -91,18 +112,7 @@ export function DataTable<T extends Record<string, unknown>>({
 
   return (
     <Card className="overflow-hidden">
-      {(title || subtitle) && (
-        <div className="px-4 py-3 border-b border-stone-200">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              {title && <h1 className="text-lg font-semibold text-stone-900">{title}</h1>}
-              {subtitle && (
-                <p className="text-sm text-stone-500 mt-0.5">{subtitle}</p>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      {header}
       <div className="flex-1 space-y-3 p-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <SearchInput

@@ -1,9 +1,31 @@
-import React, { useState } from "react"
-import { Loan, LoanStatus } from "../types/loan"
+import { useState } from "react"
+import { CreateModal } from "@/components/CreateModal"
+import { loanCreateFields } from "@/forms/createFields"
+import { createLoan } from "@/services/loanService"
+import { getCustomers } from "@/services/customerService"
+import type { Loan } from "@/types/loan"
+
+/** Shape used by this dashboard view (dummy data + newly created loans). */
+interface DashboardLoan {
+  id: string
+  borrowerName: string
+  loanAmount: number
+  tenorMonths: number
+  interestRate: number
+  status: string
+  disbursementDate?: string
+  settlementDate?: string
+  collateral: {
+    id: string
+    type: string
+    estimatedValue: number
+    documentNo: string
+  }
+}
 
 // Dummy Data
 // Dummy Data Loan System
-const initialLoans: Loan[] = [
+const initialLoans: DashboardLoan[] = [
   {
     id: "LN-2026-001",
     borrowerName: "PT Nusantara Jaya",
@@ -53,8 +75,10 @@ const initialLoans: Loan[] = [
 ]
 
 export const Dashboard = () => {
-  const [loans] = useState<Loan[]>(initialLoans)
-  const [selectedLoan, setSelectedLoan] = useState<Loan>(initialLoans[0])
+  const [loans, setLoans] = useState<DashboardLoan[]>(initialLoans)
+  const [selectedLoan, setSelectedLoan] = useState<DashboardLoan>(initialLoans[0])
+  const [open, setOpen] = useState(false)
+  const [notice, setNotice] = useState<string | null>(null)
 
   // Helper Format Rupiah
   const formatRupiah = (val: number) => {
@@ -66,7 +90,7 @@ export const Dashboard = () => {
   }
 
   // Helper Badge Color
-  const getStatusBadge = (status: LoanStatus) => {
+  const getStatusBadge = (status: string) => {
     switch (status) {
       case "ACTIVE":
         return "bg-emerald-50 text-emerald-700 border-emerald-200"
@@ -79,6 +103,37 @@ export const Dashboard = () => {
       default:
         return "bg-slate-50 text-slate-700 border-slate-200"
     }
+  }
+
+  const handleCreated = (loan: Loan) => {
+    // Dashboard pakai data contoh; pinjaman baru tetap ditampilkan di daftar.
+    void getCustomers()
+      .then((customers) => {
+        const customer = customers.find((c) => c.id === loan.customerId)
+        return {
+          id: loan.id,
+          borrowerName: customer?.fullName ?? "Nasabah baru",
+          loanAmount: Number(loan.amount),
+          tenorMonths: loan.tenorMonths,
+          interestRate: loan.interestRate,
+          status: loan.status,
+          disbursementDate: "-",
+          collateral: {
+            id: "-",
+            type: "Belum didaftarkan",
+            estimatedValue: 0,
+            documentNo: "-",
+          },
+        }
+      })
+      .then((created) => {
+        setLoans((prev) => [created, ...prev])
+        setSelectedLoan(created)
+        setNotice(`Pinjaman ${created.id} berhasil dibuat dengan status ${created.status}.`)
+      })
+      .catch(() => {
+        setNotice(`Pinjaman ${loan.id} berhasil dibuat. Segarkan halaman untuk melihat datanya.`)
+      })
   }
 
   return (
@@ -94,10 +149,30 @@ export const Dashboard = () => {
           </p>
         </div>
         {/* CREATE LOAN BUTTON */}
-        <button className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-500/20 hover:bg-blue-700 transition-colors">
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-500/20 hover:bg-blue-700 transition-colors"
+        >
           + Create New Loan
         </button>
       </header>
+
+      {notice ? (
+        <div
+          role="status"
+          className="mb-6 flex items-center justify-between gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700"
+        >
+          <span>{notice}</span>
+          <button
+            type="button"
+            onClick={() => setNotice(null)}
+            className="font-semibold hover:underline"
+          >
+            Tutup
+          </button>
+        </div>
+      ) : null}
 
       {/* Metric Overview*/}
       <div className="mb-8 grid grid-cols-1 gap-5 md:grid-cols-4">
@@ -268,6 +343,17 @@ export const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      {open && (
+        <CreateModal
+          title="Buat Pinjaman Baru"
+          subtitle="Data akan disimpan ke backend; status awal PENDING."
+          fields={loanCreateFields}
+          onSubmit={createLoan}
+          onSuccess={handleCreated}
+          onClose={() => setOpen(false)}
+        />
+      )}
     </div>
   )
 }

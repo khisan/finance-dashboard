@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react"
 import type { AxiosError } from "axios"
-import { get, getErrorMessage } from "../services/http"
+import { getErrorMessage } from "../services/http"
 
 export function useAsync<T>(
   key: string,
@@ -21,16 +21,14 @@ export function useAsync<T>(
       setExpired(false)
       return result
     } catch (err) {
-      const message =
-        err instanceof Error
-          ? err.message
-          : typeof err === "string"
-            ? err
-            : getErrorMessage(err)
+      const message = typeof err === "string" ? err : getErrorMessage(err)
+      const status = (err as { response?: { status?: number } })?.response?.status
       setError(message)
       setExpired(
-        err instanceof Error &&
-          (err.message === "401 Unauthorized" || err.message === "403 Forbidden")
+        status === 401 ||
+          status === 403 ||
+          message === "401 Unauthorized" ||
+          message === "403 Forbidden"
       )
       throw err
     } finally {

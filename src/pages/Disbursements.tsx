@@ -1,7 +1,10 @@
-import { Card } from "@/components/ui"
+import { useState } from "react"
+import { Button } from "@/components/ui"
+import { CreateModal } from "@/components/CreateModal"
+import { disbursementCreateFields } from "@/forms/createFields"
 import { formatDate, formatIDR } from "@/lib/format"
 import { useAsync } from "@/hooks/useApi"
-import { getDisbursements } from "@/services/disbursementService"
+import { createDisbursement, getDisbursements } from "@/services/disbursementService"
 import type { DisbursementListItem } from "@/types/disbursement"
 import type { DisbursementStatus } from "@/types/enums"
 import { DataTable } from "@/components/DataTable"
@@ -21,6 +24,7 @@ const STATUS_CLASS: Record<DisbursementStatus, string> = {
 }
 
 export default function DisbursementsPage() {
+  const [open, setOpen] = useState(false)
   const { data, loading, error, refetch } = useAsync<DisbursementListItem[]>(
     "disbursements",
     getDisbursements,
@@ -60,7 +64,7 @@ export default function DisbursementsPage() {
   ]
 
   return (
-    <Card className="overflow-hidden">
+    <>
       <DataTable<DisbursementListItem>
         columns={columns}
         rows={data ?? []}
@@ -69,10 +73,20 @@ export default function DisbursementsPage() {
         onRetry={refetch}
         searchKeys={["disbursementNumber", "loanId", "bankName"]}
         pageSize={8}
-        emptyMessage="Belum ada pencairan. Data akan muncul setelah tersedia."
+        emptyMessage="Belum ada pencairan. Tambah pinjaman dulu, lalu catat pencairannya."
         title="Pencairan"
         subtitle="Data disbursement / pencairan pinjaman"
+        action={<Button onClick={() => setOpen(true)}>+ Tambah Pencairan</Button>}
       />
-    </Card>
+      {open && (
+        <CreateModal
+          title="Tambah Pencairan"
+          fields={disbursementCreateFields}
+          onSubmit={createDisbursement}
+          onSuccess={() => refetch()}
+          onClose={() => setOpen(false)}
+        />
+      )}
+    </>
   )
 }

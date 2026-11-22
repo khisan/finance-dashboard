@@ -1,10 +1,14 @@
-import { Card } from "@/components/ui"
+import { useState } from "react"
+import { Button } from "@/components/ui"
+import { CreateModal } from "@/components/CreateModal"
+import { guarantorCreateFields } from "@/forms/createFields"
 import { useAsync } from "@/hooks/useApi"
-import { getGuarantors } from "@/services/guarantorService"
+import { createGuarantor, getGuarantors } from "@/services/guarantorService"
 import type { GuarantorListItem } from "@/types/guarantor"
 import { DataTable } from "@/components/DataTable"
 
 export default function GuarantorsPage() {
+  const [open, setOpen] = useState(false)
   const { data, loading, error, refetch } = useAsync<GuarantorListItem[]>(
     "guarantors",
     getGuarantors,
@@ -20,7 +24,7 @@ export default function GuarantorsPage() {
   ]
 
   return (
-    <Card className="overflow-hidden">
+    <>
       <DataTable<GuarantorListItem>
         columns={columns}
         rows={data ?? []}
@@ -29,10 +33,20 @@ export default function GuarantorsPage() {
         onRetry={refetch}
         searchKeys={["fullName", "email", "relationship", "loanId"]}
         pageSize={8}
-        emptyMessage="Belum ada data penjamin. Data akan muncul setelah tersedia."
+        emptyMessage="Belum ada penjamin. Tambah pinjaman dulu, lalu daftarkan penjaminnya."
         title="Penjamin"
         subtitle="Data guarantor / penjamin pinjaman"
+        action={<Button onClick={() => setOpen(true)}>+ Tambah Penjamin</Button>}
       />
-    </Card>
+      {open && (
+        <CreateModal
+          title="Tambah Penjamin"
+          fields={guarantorCreateFields}
+          onSubmit={createGuarantor}
+          onSuccess={() => refetch()}
+          onClose={() => setOpen(false)}
+        />
+      )}
+    </>
   )
 }
