@@ -17,7 +17,7 @@ import {
   guarantorCreateFields,
   invoiceCreateFields,
   disbursementCreateFields,
-  userCreateFields,
+  userEditFields,
 } from "@/forms/createFields"
 import { getCustomerById, updateCustomer } from "@/services/customerService"
 import {
@@ -221,13 +221,14 @@ const configs: Record<string, ResourceConfig> = {
   users: {
     label: "Pengguna",
     listPath: "/users",
-    // Backend hanya punya GET by email & POST — tidak ada PUT /api/users/{id}.
+    // Detail diakses via /users/:email, sedangkan PUT backend memakai UUID.
+    // Edit tersedia dari halaman daftar pengguna (sudah punya UUID).
     canEdit: false,
-    editFields: userCreateFields,
+    editFields: userEditFields,
     getDetail: async (email) =>
       (await getUserByEmail(email)) as unknown as DetailRecord,
     update: async () => {
-      throw new Error("Backend belum menyediakan endpoint update user.")
+      throw new Error("Gunakan tombol Edit di halaman daftar pengguna.")
     },
     recordLabel: (r) => str(r.name),
     fields: (r) => [

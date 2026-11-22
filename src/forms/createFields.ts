@@ -269,3 +269,14 @@ export const userCreateFields: FormField[] = [
     ],
   },
 ]
+
+/** Edit variant: password is optional; blank means "keep the current one". */
+export const userEditFields: FormField[] = userCreateFields.map((field) =>
+  field.name === "password"
+    ? {
+        ...field,
+        required: false,
+        hint: "Kosongkan untuk tetap memakai password lama.",
+      }
+    : field,
+)
