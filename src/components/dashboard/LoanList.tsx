@@ -1,4 +1,8 @@
-import { formatRupiah, getStatusBadge, type DashboardLoan } from "@/lib/dashboard"
+import {
+  formatRupiah,
+  getStatusBadge,
+  type DashboardLoan,
+} from "@/lib/dashboard"
 
 interface LoanListProps {
   loans: DashboardLoan[]
@@ -7,7 +11,12 @@ interface LoanListProps {
   onViewDetail: (loan: DashboardLoan) => void
 }
 
-export function LoanList({ loans, selectedId, onSelect, onViewDetail }: LoanListProps) {
+export function LoanList({
+  loans,
+  selectedId,
+  onSelect,
+  onViewDetail,
+}: LoanListProps) {
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2">
       <div className="mb-4 flex items-center justify-between">
@@ -18,7 +27,7 @@ export function LoanList({ loans, selectedId, onSelect, onViewDetail }: LoanList
       </div>
 
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm">
+        <table className="w-full text-center text-sm">
           <thead>
             <tr className="border-b border-slate-100 text-xs text-slate-400 uppercase">
               <th className="pb-3 font-semibold">Loan ID & Borrower</th>
@@ -53,7 +62,7 @@ export function LoanList({ loans, selectedId, onSelect, onViewDetail }: LoanList
                     {loan.status}
                   </span>
                 </td>
-                <td className="py-4 text-right">
+                <td className="py-4">
                   <button
                     type="button"
                     data-action="view-detail"

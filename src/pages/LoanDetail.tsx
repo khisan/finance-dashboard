@@ -87,7 +87,11 @@ function loanSections(loan: LoanDetailData): DetailSection[] {
           header: "Total",
           render: (x) => money(x.totalAmount),
         },
-        { key: "dueDate", header: "Jatuh Tempo", render: (x) => date(x.dueDate) },
+        {
+          key: "dueDate",
+          header: "Jatuh Tempo",
+          render: (x) => date(x.dueDate),
+        },
         { key: "status", header: "Status", render: (x) => str(x.status) },
       ],
     },
@@ -136,7 +140,7 @@ export default function LoanDetail() {
                 f("Nasabah", str(record.borrowerName)),
                 f("Customer ID", str(record.customerId)),
                 f("Email Nasabah", str(record.customerEmail)),
-                f("Alamat Nasabah", str(record.customerAddress), true),
+                f("Alamat Nasabah", str(record.customerAddress)),
                 f("Jumlah Pinjaman", money(record.amount)),
                 f("Suku Bunga", `${str(record.interestRate)}%`),
                 f("Tenor", `${str(record.tenorMonths)} bulan`),
@@ -175,7 +179,10 @@ export default function LoanDetail() {
           initialValues={toFormValues(loanCreateFields, record)}
           submitLabel="Simpan Perubahan"
           onSubmit={(payload) =>
-            updateLoan(id, payload as unknown as Parameters<typeof updateLoan>[1])
+            updateLoan(
+              id,
+              payload as unknown as Parameters<typeof updateLoan>[1],
+            )
           }
           onSuccess={() => void refetch()}
           onClose={() => setEditing(false)}
