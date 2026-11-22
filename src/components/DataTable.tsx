@@ -73,7 +73,7 @@ export function DataTable<T extends object>({
   const header =
     title || subtitle || action ? (
       <div className="px-4 py-3 border-b border-stone-200">
-        <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center justify-between gap-3">
           <div>
             {title && (
               <h1 className="text-lg font-semibold text-stone-900">{title}</h1>
