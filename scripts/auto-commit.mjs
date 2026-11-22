@@ -31,7 +31,7 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, copyFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { extname, join } from "node:path";
+import { extname, join, relative, resolve, sep } from "node:path";
 
 const USAGE =
   "Usage: node scripts/auto-commit.mjs [--dry-run] [--amend] [--paths <path> ...] [-p <path>] [--message-only]\n" +
@@ -151,8 +151,8 @@ function stagePaths(paths) {
 
 function normalizeRepoPath(p) {
   const root = repoRoot();
-  const rel = require("path").relative(root, require("path").resolve(root, p));
-  if (rel.startsWith(".." + require("path").sep) || rel === "..") die("path is outside the repository: " + p);
+  const rel = relative(root, resolve(root, p));
+  if (rel.startsWith(".." + sep) || rel === "..") die("path is outside the repository: " + p);
   return rel;
 }
 
@@ -306,6 +306,11 @@ function main() {
   }
 
   if (opts.messageOnly) {
+    if (!files.length) {
+      // nothing staged yet: print the safe default message, never crash
+      process.stdout.write("chore: update staged files\n");
+      process.exit(0);
+    }
     const ns = new Map();
     const r = gitTry(["diff", "--cached", "--name-status", "-z", "-M"]);
     if (r.ok) for (const [k, v] of nameStatusMap(stdoutOf(r))) ns.set(k, v);
@@ -357,7 +362,6 @@ function main() {
 
   const { msg } = buildMessage(files, ns);
 
-  const [name, email] = identity();
   const cmd = ["commit", "-F", "-"];
   if (opts.amend) cmd.splice(1, 0, "--amend");
   try {
