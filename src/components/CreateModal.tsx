@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import { Loader2, X } from "lucide-react"
 import { getErrorMessage } from "@/services/http"
+import { formatNumberInput, parseNumberInput } from "@/lib/numberFormat"
 
 export interface SelectOption {
   value: string
@@ -56,8 +57,8 @@ function toPayload(fields: FormField[], values: Record<string, string>): Record<
     const value = raw.trim()
     if (!value && !field.required) continue
     if (field.type === "number") {
-      const num = Number(value)
-      payload[field.name] = Number.isFinite(num) ? num : value
+      const num = parseNumberInput(value)
+      payload[field.name] = num ?? value
     } else if (field.type === "date" || field.type === "datetime-local") {
       const parsed = new Date(value)
       payload[field.name] = Number.isNaN(parsed.getTime()) ? value : parsed.toISOString()
@@ -87,7 +88,8 @@ export function CreateModal<T, P = Record<string, unknown>>({
     for (const field of fields) {
       const fromRecord = initialValues?.[field.name]
       const raw = fromRecord !== undefined ? fromRecord : field.defaultValue
-      values[field.name] = raw == null ? "" : String(raw)
+      const text = raw == null ? "" : String(raw)
+      values[field.name] = field.type === "number" ? formatNumberInput(text) : text
     }
     return values
   }, [fields, initialValues])
@@ -151,8 +153,8 @@ export function CreateModal<T, P = Record<string, unknown>>({
       if (f.type !== "number") return false
       const raw = String(values[f.name] ?? "").trim()
       if (!raw) return false
-      const num = Number(raw)
-      if (!Number.isFinite(num)) return true
+      const num = parseNumberInput(raw)
+      if (num === null) return true
       if (f.min !== undefined && num < Number(f.min)) return true
       if (f.max !== undefined && num > Number(f.max)) return true
       return false
@@ -210,15 +212,44 @@ export function CreateModal<T, P = Record<string, unknown>>({
         <form onSubmit={submit} noValidate>
           <div className="grid grid-cols-1 gap-4 px-5 py-5 sm:grid-cols-2">
             {fields.map((field, index) => {
+              const id = `create-${field.name}`
               const common = {
-                id: `create-${field.name}`,
+                id,
                 name: field.name,
                 required: field.required,
                 disabled: submitting || (loadingOptions && typeof field.options === "function"),
                 value: values[field.name] ?? "",
                 onChange: (
                   e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
-                ) => setValue(field.name, e.target.value),
+                ) => {
+                  const target = e.target
+                  if (field.type !== "number") {
+                    setValue(field.name, target.value)
+                    return
+                  }
+                  const caret =
+                    field.type === "number"
+                      ? (target as HTMLInputElement).selectionStart ?? target.value.length
+                      : target.value.length
+                  const atEnd = caret >= target.value.length
+                  const digitsBefore = target.value.slice(0, caret).replace(/\D/g, "").length
+                  const formatted = formatNumberInput(target.value)
+                  setValue(field.name, formatted)
+                  window.requestAnimationFrame(() => {
+                    const input = document.getElementById(id) as HTMLInputElement | null
+                    if (!input) return
+                    let pos = formatted.length
+                    if (!atEnd) {
+                      let seen = 0
+                      pos = 0
+                      while (pos < formatted.length && seen < digitsBefore) {
+                        if (/\d/.test(formatted[pos])) seen += 1
+                        pos += 1
+                      }
+                    }
+                    input.setSelectionRange(pos, pos)
+                  })
+                },
                 placeholder: field.placeholder,
                 className: inputClass,
               }
@@ -258,10 +289,11 @@ export function CreateModal<T, P = Record<string, unknown>>({
                       <input
                         ref={ref}
                         {...common}
-                        type={field.type ?? "text"}
-                        min={field.min}
-                        max={field.max}
-                        step={field.step}
+                        type={field.type === "number" ? "text" : field.type ?? "text"}
+                        inputMode={field.type === "number" ? "decimal" : undefined}
+                        min={field.type === "number" ? undefined : field.min}
+                        max={field.type === "number" ? undefined : field.max}
+                        step={field.type === "number" ? undefined : field.step}
                       />
                     )}
                   </div>
