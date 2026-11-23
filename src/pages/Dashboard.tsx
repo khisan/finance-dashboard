@@ -16,7 +16,9 @@ import type { Loan } from "@/types/loan"
 /** Operation overview: static metrics + dummy loans + newly created loans. */
 export const Dashboard = () => {
   const [loans, setLoans] = useState<DashboardLoan[]>(initialLoans)
-  const [selectedLoan, setSelectedLoan] = useState<DashboardLoan>(initialLoans[0])
+  const [selectedLoan, setSelectedLoan] = useState<DashboardLoan>(
+    initialLoans[0],
+  )
   const [open, setOpen] = useState(false)
   const [detailLoan, setDetailLoan] = useState<DashboardLoan | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
@@ -25,11 +27,13 @@ export const Dashboard = () => {
     const created = toDashboardLoan(loan)
     setLoans((prev) => [created, ...prev])
     setSelectedLoan(created)
-    setNotice(`Pinjaman ${created.id} berhasil dibuat dengan status ${created.status}.`)
+    setNotice(
+      `Pinjaman ${created.id} berhasil dibuat dengan status ${created.status}.`,
+    )
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6 font-sans text-slate-800">
+    <div className="rounded-2xl bg-slate-50 p-6 font-sans text-slate-800">
       <header className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">
@@ -90,7 +94,10 @@ export const Dashboard = () => {
       ) : null}
 
       {detailLoan ? (
-        <LoanDetailModal loan={detailLoan} onClose={() => setDetailLoan(null)} />
+        <LoanDetailModal
+          loan={detailLoan}
+          onClose={() => setDetailLoan(null)}
+        />
       ) : null}
     </div>
   )

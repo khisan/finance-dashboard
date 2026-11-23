@@ -1,5 +1,8 @@
 import axios, { InternalAxiosRequestConfig } from "axios"
-// import loginRedirect from "../utils/loginRedirect"
+import { redirectToLogin } from "../utils/loginRedirect"
+
+// Endpoint publik: 401 di sini berarti kredensial salah, bukan sesi expired.
+const PUBLIC_AUTH_ENDPOINTS = ["/auth/login", "/auth/register"]
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -28,10 +31,13 @@ api.interceptors.response.use(
   },
   (error) => {
     // Handle errors globally
-    if (error.response && error.response.status === 401) {
-      localStorage.removeItem("authToken") // Remove the token from local storage
-      // loginRedirect() // Redirect to login page (implement this function as needed)
-      console.error("Unauthorized access - perhaps the token has expired.")
+    const requestPath: string = error.config?.url ?? ""
+    if (
+      error.response?.status === 401 &&
+      !PUBLIC_AUTH_ENDPOINTS.some((endpoint) => requestPath.startsWith(endpoint))
+    ) {
+      // Sesi/token tidak valid — bersihkan storage dan lempar ke login.
+      redirectToLogin()
     } else if (error.request) {
       // Request was made but no response received
       console.error("No response received:", error.request)

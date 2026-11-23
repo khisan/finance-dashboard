@@ -4,7 +4,6 @@ import { CreateModal } from "@/components/CreateModal"
 import { RowActions } from "@/components/RowActions"
 import { guarantorCreateFields } from "@/forms/createFields"
 import { useAsync } from "@/hooks/useApi"
-import { loanLabel } from "@/lib/format"
 import { toFormValues } from "@/lib/formValues"
 import {
   createGuarantor,
@@ -42,16 +41,13 @@ export default function GuarantorsPage() {
     { key: "email", header: "Email" },
     { key: "phoneNumber", header: "Telepon" },
     {
-      key: "loanId",
-      header: "Pinjaman",
-      render: (r) => {
-        const row = r as GuarantorListItem
-        return (
-          <span title={row.loanId} className="whitespace-nowrap">
-            {loanLabel(row)}
-          </span>
-        )
-      },
+      key: "loanNumber",
+      header: "No. Pinjaman",
+      render: (r) => (
+        <span className="whitespace-nowrap">
+          {(r as GuarantorListItem).loanNumber || "—"}
+        </span>
+      ),
     },
   ]
 

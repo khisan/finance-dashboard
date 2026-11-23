@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { Outlet, useNavigate, useLocation } from "react-router-dom"
+import { useAuth } from "@/hooks/useAuth"
 import Sidebar from "./Sidebar"
 import {
   MenuIcon,
@@ -37,6 +38,7 @@ const pageSubtitles: Record<string, string> = {
 export default function DashboardLayout() {
   const navigate = useNavigate()
   const location = useLocation()
+  const { user } = useAuth()
   const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
@@ -79,7 +81,7 @@ export default function DashboardLayout() {
                 <PersonIcon className="h-4 w-4" />
               </div>
               <span className="hidden text-sm text-stone-700 sm:inline">
-                Admin
+                {user?.name ?? user?.email ?? "Pengguna"}
               </span>
             </button>
 

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui"
 import { CreateModal } from "@/components/CreateModal"
 import { RowActions } from "@/components/RowActions"
 import { invoiceCreateFields } from "@/forms/createFields"
-import { formatDate, formatIDR, loanLabel } from "@/lib/format"
+import { formatDate, formatIDR } from "@/lib/format"
 import { toFormValues } from "@/lib/formValues"
 import { useAsync } from "@/hooks/useApi"
 import {
@@ -54,16 +54,13 @@ export default function InvoicesPage() {
     { key: "id", header: "ID" },
     { key: "invoiceNumber", header: "Nomor Faktur" },
     {
-      key: "loanId",
-      header: "Pinjaman",
-      render: (r) => {
-        const row = r as InvoiceListItem
-        return (
-          <span title={row.loanId} className="whitespace-nowrap">
-            {loanLabel(row)}
-          </span>
-        )
-      },
+      key: "loanNumber",
+      header: "No. Pinjaman",
+      render: (r) => (
+        <span className="whitespace-nowrap">
+          {(r as InvoiceListItem).loanNumber || "—"}
+        </span>
+      ),
     },
     { key: "installmentNumber", header: "Nomor Angsuran" },
     {

@@ -4,7 +4,7 @@ import { CreateModal } from "@/components/CreateModal"
 import { RowActions } from "@/components/RowActions"
 import { collateralCreateFields } from "@/forms/createFields"
 import { useAsync } from "@/hooks/useApi"
-import { formatIDR, loanLabel } from "@/lib/format"
+import { formatIDR } from "@/lib/format"
 import { toFormValues } from "@/lib/formValues"
 import {
   createCollateral,
@@ -71,16 +71,13 @@ export default function CollateralsPage() {
         formatIDR((r as { pledgedValue: number }).pledgedValue),
     },
     {
-      key: "loanId",
-      header: "Pinjaman",
-      render: (r) => {
-        const row = r as CollateralListItem
-        return (
-          <span title={row.loanId} className="whitespace-nowrap">
-            {loanLabel(row)}
-          </span>
-        )
-      },
+      key: "loanNumber",
+      header: "No. Pinjaman",
+      render: (r) => (
+        <span className="whitespace-nowrap">
+          {(r as CollateralListItem).loanNumber || "—"}
+        </span>
+      ),
     },
   ]
 

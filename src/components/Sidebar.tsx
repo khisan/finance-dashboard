@@ -99,7 +99,7 @@ export default function Sidebar({
                     className={`flex items-center gap-3 px-3 py-2 text-sm font-medium transition-all duration-150 ${
                       isActive
                         ? "rounded-4xl bg-[#E8DEF8] text-[#1D192B] font-semibold"
-                        : "text-stone-600 hover:bg-stone-100 hover:text-stone-900"
+                        : "rounded-4xl text-stone-600 hover:bg-stone-100 hover:text-stone-900"
                     }`}
                     title={isActive ? "Halaman aktif" : undefined}
                   >

@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { Button } from "@/components/ui"
 import { CreateModal } from "@/components/CreateModal"
 import { RowActions } from "@/components/RowActions"
@@ -12,7 +12,11 @@ import {
   updateCustomer,
 } from "@/services/customerService"
 import type { CustomerListItem } from "@/types/customer"
+import type { LoanListItem } from "@/types/loan"
+import { getLoans } from "@/services/loanService"
 import { DataTable } from "@/components/DataTable"
+
+type CustomerRow = CustomerListItem & { loanNumber: string }
 
 export default function CustomersPage() {
   const [open, setOpen] = useState(false)
@@ -22,6 +26,37 @@ export default function CustomersPage() {
     "customers",
     getCustomers,
   )
+  // CustomerResponse tidak punya loanNumber; ambil dari /loans lalu petakan per nasabah.
+  const {
+    data: loans,
+    loading: loansLoading,
+    refetch: refetchLoans,
+  } = useAsync<LoanListItem[]>("loans", getLoans)
+
+  const loanNumbersByCustomer = useMemo(() => {
+    const map = new Map<string, string[]>()
+    for (const loan of loans ?? []) {
+      if (!loan.loanNumber) continue
+      const numbers = map.get(loan.customerId) ?? []
+      numbers.push(loan.loanNumber)
+      map.set(loan.customerId, numbers)
+    }
+    return map
+  }, [loans])
+
+  const rows = useMemo<CustomerRow[]>(
+    () =>
+      (data ?? []).map((customer) => ({
+        ...customer,
+        loanNumber: (loanNumbersByCustomer.get(customer.id) ?? []).join(", ") || "—",
+      })),
+    [data, loanNumbersByCustomer],
+  )
+
+  const retry = () => {
+    refetch()
+    refetchLoans()
+  }
 
   const openEdit = async (id: string) => {
     setEditError(null)
@@ -36,6 +71,7 @@ export default function CustomersPage() {
 
   const columns = [
     { key: "id", header: "ID" },
+    { key: "loanNumber", header: "No. Pinjaman" },
     { key: "fullName", header: "Nama" },
     { key: "email", header: "Email" },
     {
@@ -62,13 +98,13 @@ export default function CustomersPage() {
           {editError}
         </p>
       ) : null}
-      <DataTable<CustomerListItem>
+      <DataTable<CustomerRow>
         columns={columns}
-        rows={data ?? []}
-        loading={loading}
+        rows={rows}
+        loading={loading || loansLoading}
         error={error}
-        onRetry={refetch}
-        searchKeys={["fullName", "email", "phoneNumber", "address"]}
+        onRetry={retry}
+        searchKeys={["loanNumber", "fullName", "email", "phoneNumber", "address"]}
         pageSize={8}
         emptyMessage="Belum ada nasabah. Gunakan tombol Tambah untuk membuat data pertama."
         title="Nasabah"

@@ -234,7 +234,9 @@ function baseWithoutExt(p) {
 }
 
 function relativeWithoutExt(p) {
-  return join(...p.split("/").slice(0, -1)).replace(extname(p), "") || p.split("/").pop();
+  const parts = p.split("/");
+  const name = parts[parts.length - 1].replace(extname(p), "");
+  return parts.length > 1 ? join(...parts.slice(0, -1), name) : name;
 }
 
 function descriptionOf(paths) {

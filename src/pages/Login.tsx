@@ -73,7 +73,7 @@ export default function LoginPage() {
             <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
               Email
             </label>
-            <div className="relative flex items-center">
+            <div className="relative flex items-center mt-2">
               <Mail className="w-5 h-5 absolute left-3.5 text-slate-400" />
               <input
                 type="email"
@@ -90,7 +90,7 @@ export default function LoginPage() {
             <label className="text-xs font-semibold text-slate-300 uppercase tracking-wider">
               Password
             </label>
-            <div className="relative flex items-center">
+            <div className="relative flex items-center mt-2">
               <Lock className="w-5 h-5 absolute left-3.5 text-slate-400" />
               <input
                 type={showPassword ? "text" : "password"}
@@ -132,8 +132,7 @@ export default function LoginPage() {
             type="submit"
             className="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-900 text-white font-medium py-3 rounded-xl shadow-blue-600/30 flex items-center justify-center gap-2 transition-all group"
           >
-            <span>Masuk Dashboard</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            <span>Login</span>
           </button>
         </form>
       </div>
