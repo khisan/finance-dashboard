@@ -44,13 +44,13 @@ export function LoanPanel({ loan }: { loan: DashboardLoan }) {
       {/* Ations: Disbursement & Settlement*/}
       <div className="mt-6 space-y-2">
         {loan.status === "PENDING" && (
-          <button className="w-full rounded-xl bg-blue-600 py-2.5 text-xs font-bold text-white hover:bg-blue-700 transition-colors">
+          <button className="cursor-pointer w-full rounded-xl bg-blue-600 py-2.5 text-xs font-bold text-white hover:bg-blue-700 transition-colors">
             Process Disbursement
           </button>
         )}
 
         {loan.status === "ACTIVE" && (
-          <button className="w-full rounded-xl bg-purple-600 py-2.5 text-xs font-bold text-white hover:bg-purple-700 transition-colors">
+          <button className="cursor-pointer w-full rounded-xl bg-purple-600 py-2.5 text-xs font-bold text-white hover:bg-purple-700 transition-colors">
             Process Settlement (Pelunasan)
           </button>
         )}

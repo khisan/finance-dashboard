@@ -70,7 +70,7 @@ export function LoanList({
                       e.stopPropagation()
                       onViewDetail(loan)
                     }}
-                    className="text-xs font-semibold text-blue-600 hover:underline"
+                    className="cursor-pointer text-xs font-semibold text-blue-600 hover:underline"
                   >
                     View Detail →
                   </button>

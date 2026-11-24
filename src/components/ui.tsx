@@ -206,7 +206,7 @@ export function ErrorState({
       {onRetry ? (
         <button
           onClick={onRetry}
-          className="mt-3 text-sm font-medium text-blue-600 underline"
+          className="cursor-pointer mt-3 text-sm font-medium text-blue-600 underline"
         >
           Try again
         </button>

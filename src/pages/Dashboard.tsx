@@ -43,7 +43,7 @@ export const Dashboard = () => {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-500/20 hover:bg-blue-700 transition-colors"
+          className="cursor-pointer flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-500/20 hover:bg-blue-700 transition-colors"
         >
           + Create New Loan
         </button>
@@ -58,7 +58,7 @@ export const Dashboard = () => {
           <button
             type="button"
             onClick={() => setNotice(null)}
-            className="font-semibold hover:underline"
+            className="cursor-pointer font-semibold hover:underline"
           >
             Tutup
           </button>

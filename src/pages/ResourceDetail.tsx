@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { Button } from "@/components/ui"
+import { AuditTrailCard } from "@/components/AuditTrailCard"
 import { CreateModal, type FormField } from "@/components/CreateModal"
 import {
   DetailView,
@@ -32,6 +33,7 @@ import {
 } from "@/services/disbursementService"
 import { getUserByEmail } from "@/services/userService"
 import type { CollateralType } from "@/types/enums"
+import type { ApprovalEntityType } from "@/types/approval"
 
 type DetailRecord = Record<string, unknown>
 type EditPayload = Record<string, unknown>
@@ -39,6 +41,7 @@ type EditPayload = Record<string, unknown>
 interface ResourceConfig {
   label: string
   listPath: string
+  auditEntity?: ApprovalEntityType
   canEdit: boolean
   editFields: FormField[]
   getDetail: (id: string) => Promise<DetailRecord | null>
@@ -52,6 +55,7 @@ const configs: Record<string, ResourceConfig> = {
   customers: {
     label: "Nasabah",
     listPath: "/customers",
+    auditEntity: "CUSTOMER",
     canEdit: true,
     editFields: customerCreateFields,
     getDetail: async (id) =>
@@ -76,6 +80,7 @@ const configs: Record<string, ResourceConfig> = {
   collaterals: {
     label: "Agunan",
     listPath: "/collaterals",
+    auditEntity: "COLLATERAL",
     canEdit: true,
     editFields: collateralCreateFields,
     getDetail: async (id) =>
@@ -112,6 +117,7 @@ const configs: Record<string, ResourceConfig> = {
   guarantors: {
     label: "Penjamin",
     listPath: "/guarantors",
+    auditEntity: "GUARANTOR",
     canEdit: true,
     editFields: guarantorCreateFields,
     getDetail: async (id) =>
@@ -148,6 +154,7 @@ const configs: Record<string, ResourceConfig> = {
   invoices: {
     label: "Faktur",
     listPath: "/invoices",
+    auditEntity: "INVOICE",
     canEdit: true,
     editFields: invoiceCreateFields,
     getDetail: async (id) =>
@@ -184,6 +191,7 @@ const configs: Record<string, ResourceConfig> = {
   disbursements: {
     label: "Pencairan",
     listPath: "/disbursements",
+    auditEntity: "DISBURSEMENT",
     canEdit: true,
     editFields: disbursementCreateFields,
     getDetail: async (id) =>
@@ -279,6 +287,11 @@ export default function ResourceDetail({ resource }: { resource: string }) {
         loading={loading}
         error={detailError}
         onRetry={refetch}
+        footer={
+          config.auditEntity && record ? (
+            <AuditTrailCard entityId={id} entityType={config.auditEntity} />
+          ) : undefined
+        }
         actions={
           <>
             <button

@@ -102,7 +102,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3.5 text-slate-400 hover:text-slate-200 transition-colors"
+                className="cursor-pointer absolute right-3.5 text-slate-400 hover:text-slate-200 transition-colors"
               >
                 {showPassword ? (
                   <EyeOff className="w-5 h-5" />
@@ -130,7 +130,7 @@ export default function LoginPage() {
           {/* Material Style Button */}
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-900 text-white font-medium py-3 rounded-xl shadow-blue-600/30 flex items-center justify-center gap-2 transition-all group"
+            className="cursor-pointer w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-900 text-white font-medium py-3 rounded-xl shadow-blue-600/30 flex items-center justify-center gap-2 transition-all group"
           >
             <span>Login</span>
           </button>

@@ -3,6 +3,7 @@ import { DataTable } from "@/components/DataTable"
 import { Button, Card, StatusChip } from "@/components/ui"
 import { useAsync } from "@/hooks/useApi"
 import { useAuth } from "@/hooks/useAuth"
+import { ENTITY_LABEL } from "@/lib/auditLabels"
 import { formatDateTime } from "@/lib/format"
 import {
   approveApproval,
@@ -17,15 +18,6 @@ import type {
   ApprovalRequest,
   ApprovalStatus,
 } from "@/types/approval"
-
-const ENTITY_LABEL: Record<ApprovalEntityType, string> = {
-  CUSTOMER: "Nasabah",
-  COLLATERAL: "Agunan",
-  LOAN: "Pinjaman",
-  GUARANTOR: "Penjamin",
-  INVOICE: "Faktur",
-  DISBURSEMENT: "Pencairan",
-}
 
 const OPERATION_LABEL: Record<ApprovalOperation, string> = {
   CREATE: "Tambah",
@@ -286,7 +278,7 @@ export default function ApprovalsPage() {
             <button
               type="button"
               onClick={() => setDetail(r)}
-              className="rounded-lg border border-stone-200 px-2 py-1 text-xs font-semibold text-stone-600 hover:bg-stone-50"
+              className="cursor-pointer rounded-lg border border-stone-200 px-2 py-1 text-xs font-semibold text-stone-600 hover:bg-stone-50"
             >
               Detail
             </button>
@@ -295,14 +287,14 @@ export default function ApprovalsPage() {
                 <button
                   type="button"
                   onClick={() => openDecision(r, "approve")}
-                  className="rounded-lg bg-emerald-600 px-2 py-1 text-xs font-semibold text-white hover:bg-emerald-700"
+                  className="cursor-pointer rounded-lg bg-emerald-600 px-2 py-1 text-xs font-semibold text-white hover:bg-emerald-700"
                 >
                   Setujui
                 </button>
                 <button
                   type="button"
                   onClick={() => openDecision(r, "reject")}
-                  className="rounded-lg bg-red-600 px-2 py-1 text-xs font-semibold text-white hover:bg-red-700"
+                  className="cursor-pointer rounded-lg bg-red-600 px-2 py-1 text-xs font-semibold text-white hover:bg-red-700"
                 >
                   Tolak
                 </button>
@@ -314,7 +306,7 @@ export default function ApprovalsPage() {
                 type="button"
                 disabled={busy}
                 onClick={() => void cancel(r)}
-                className="rounded-lg border border-stone-200 px-2 py-1 text-xs font-semibold text-stone-600 hover:bg-stone-50 disabled:opacity-50"
+                className="cursor-pointer rounded-lg border border-stone-200 px-2 py-1 text-xs font-semibold text-stone-600 hover:bg-stone-50 disabled:opacity-50"
               >
                 Batalkan
               </button>
@@ -346,7 +338,7 @@ export default function ApprovalsPage() {
                 type="button"
                 onClick={() => setDecision(null)}
                 disabled={busy}
-                className="rounded-lg border border-stone-200 px-3 py-2 text-sm font-semibold text-stone-600 disabled:opacity-50"
+                className="cursor-pointer rounded-lg border border-stone-200 px-3 py-2 text-sm font-semibold text-stone-600 disabled:opacity-50"
               >
                 Batal
               </button>
@@ -371,7 +363,7 @@ export default function ApprovalsPage() {
               <button
                 type="button"
                 onClick={() => setDetail(null)}
-                className="rounded-lg p-1 text-stone-400 hover:bg-stone-100"
+                className="cursor-pointer rounded-lg p-1 text-stone-400 hover:bg-stone-100"
                 aria-label="Tutup detail"
               >
                 ✕

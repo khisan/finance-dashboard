@@ -46,7 +46,7 @@ export function LoanDetailModal({ loan, onClose }: LoanDetailModalProps) {
             type="button"
             onClick={onClose}
             aria-label="Tutup"
-            className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+            className="cursor-pointer rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
           >
             ✕
           </button>
@@ -76,7 +76,7 @@ export function LoanDetailModal({ loan, onClose }: LoanDetailModalProps) {
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50"
+            className="cursor-pointer rounded-lg border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50"
           >
             Tutup
           </button>
@@ -88,7 +88,7 @@ export function LoanDetailModal({ loan, onClose }: LoanDetailModalProps) {
                 onClose()
                 if (backendId) navigate(`/loans/${backendId}`)
               }}
-              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+              className="cursor-pointer rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
             >
               Buka Halaman Detail
             </button>

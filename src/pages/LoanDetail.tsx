@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { Button, StatusChip } from "@/components/ui"
+import { AuditTrailCard } from "@/components/AuditTrailCard"
 import { CreateModal } from "@/components/CreateModal"
 import { DetailView, type DetailSection } from "@/components/DetailView"
 import { loanCreateFields } from "@/forms/createFields"
@@ -153,6 +154,7 @@ export default function LoanDetail() {
         loading={loading}
         error={detailError}
         onRetry={refetch}
+        footer={record ? <AuditTrailCard entityId={id} entityType="LOAN" /> : undefined}
         actions={
           <>
             <button

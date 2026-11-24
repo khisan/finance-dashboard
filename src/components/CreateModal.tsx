@@ -203,7 +203,7 @@ export function CreateModal<T, P = Record<string, unknown>>({
             onClick={onClose}
             disabled={submitting}
             aria-label="Tutup"
-            className="rounded-lg p-1 text-stone-400 hover:bg-stone-100 hover:text-stone-700 disabled:opacity-50"
+            className="cursor-pointer rounded-lg p-1 text-stone-400 hover:bg-stone-100 hover:text-stone-700 disabled:opacity-50"
           >
             <X className="h-5 w-5" />
           </button>
@@ -314,14 +314,14 @@ export function CreateModal<T, P = Record<string, unknown>>({
               type="button"
               onClick={onClose}
               disabled={submitting}
-              className="rounded-lg border border-stone-200 px-4 py-2 text-sm font-semibold text-stone-600 hover:bg-stone-50 disabled:opacity-50"
+              className="cursor-pointer rounded-lg border border-stone-200 px-4 py-2 text-sm font-semibold text-stone-600 hover:bg-stone-50 disabled:opacity-50"
             >
               Batal
             </button>
             <button
               type="submit"
               disabled={submitting || loadingOptions}
-              className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-60"
+              className="cursor-pointer inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-60"
             >
               {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
               {submitting ? "Menyimpan..." : submitLabel}

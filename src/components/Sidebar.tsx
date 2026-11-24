@@ -83,7 +83,7 @@ export default function Sidebar({
           </p>
         </div>
         <button
-          className="ml-auto flex h-8 w-8 items-center justify-center rounded-lg text-stone-400 hover:bg-stone-100 hover:text-stone-600 md:hidden"
+          className="cursor-pointer ml-auto flex h-8 w-8 items-center justify-center rounded-lg text-stone-400 hover:bg-stone-100 hover:text-stone-600 md:hidden"
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Buka menu"
         >

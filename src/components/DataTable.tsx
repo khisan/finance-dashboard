@@ -170,7 +170,7 @@ export function DataTable<T extends object>({
                   ))}
                   {rowActions ? (
                     <td className="px-4 py-3">
-                      <div className="flex items-center gap-2">
+                      <div className="flex justify-center items-center gap-2 text-center">
                         {rowActions(row)}
                       </div>
                     </td>

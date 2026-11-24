@@ -65,7 +65,7 @@ export default function SettingsPage() {
           <button
             type="button"
             onClick={logout}
-            className="w-full px-4 py-2 rounded-lg bg-red-50 text-red-600 font-semibold text-sm border border-red-200 hover:bg-red-100 transition"
+            className="cursor-pointer w-full px-4 py-2 rounded-lg bg-red-50 text-red-600 font-semibold text-sm border border-red-200 hover:bg-red-100 transition"
           >
             Keluar
           </button>

@@ -26,6 +26,8 @@ export interface DetailViewProps {
   fields: DetailField[]
   sections?: DetailSection[]
   actions?: ReactNode
+  /** Optional card rendered at the bottom, e.g. a scoped audit trail. */
+  footer?: ReactNode
   loading?: boolean
   error?: string | null
   onRetry?: () => void
@@ -38,6 +40,7 @@ export function DetailView({
   fields,
   sections,
   actions,
+  footer,
   loading,
   error,
   onRetry,
@@ -128,6 +131,8 @@ export function DetailView({
           )}
         </Card>
       ))}
+
+      {footer}
     </div>
   )
 }
