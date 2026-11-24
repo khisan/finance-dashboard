@@ -12,7 +12,7 @@ export async function loanOptions(): Promise<SelectOption[]> {
   const rows = await getLoans()
   return rows.map((l) => ({
     value: l.id,
-    label: `${l.loanNumber || l.id} — ${l.customerName || "Nasabah"}`,
+    label: `${l.loanNumber} — ${l.customerName || "Nasabah"}`,
   }))
 }
 
@@ -164,12 +164,6 @@ export const guarantorCreateFields: FormField[] = [
 export const invoiceCreateFields: FormField[] = [
   loanIdField,
   {
-    name: "invoiceNumber",
-    label: "Nomor Faktur",
-    required: true,
-    placeholder: "INV-202611-001",
-  },
-  {
     name: "installmentNumber",
     label: "Angsuran Ke-",
     type: "number",
@@ -226,12 +220,6 @@ export const invoiceCreateFields: FormField[] = [
 
 export const disbursementCreateFields: FormField[] = [
   loanIdField,
-  {
-    name: "disbursementNumber",
-    label: "Nomor Pencairan",
-    required: true,
-    placeholder: "DIS-202611-001",
-  },
   {
     name: "amount",
     label: "Jumlah Pencairan",

@@ -4,7 +4,6 @@ import type { Disbursement, DisbursementListItem } from "@/types/disbursement"
 export type DisbursementCreateInput = Pick<
   Disbursement,
   | "loanId"
-  | "disbursementNumber"
   | "amount"
   | "bankName"
   | "bankAccountNumber"

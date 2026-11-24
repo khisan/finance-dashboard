@@ -4,7 +4,6 @@ import type { Invoice, InvoiceListItem } from "@/types/invoice"
 export type InvoiceCreateInput = Pick<
   Invoice,
   | "loanId"
-  | "invoiceNumber"
   | "installmentNumber"
   | "principalAmount"
   | "interestAmount"

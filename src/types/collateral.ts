@@ -2,6 +2,7 @@ import type { CollateralType } from "./enums"
 
 export interface Collateral {
   id: string
+  collateralNumber: string
   loanId: string
   loanNumber: string
   customerName: string
@@ -16,6 +17,7 @@ export interface Collateral {
 
 export interface CollateralListItem {
   id: string
+  collateralNumber: string
   loanId: string
   loanNumber: string
   customerName: string

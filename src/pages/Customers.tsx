@@ -70,7 +70,7 @@ export default function CustomersPage() {
   }
 
   const columns = [
-    { key: "id", header: "ID" },
+    { key: "customerNumber", header: "No. Nasabah" },
     { key: "loanNumber", header: "No. Pinjaman" },
     { key: "fullName", header: "Nama" },
     { key: "email", header: "Email" },
@@ -104,7 +104,7 @@ export default function CustomersPage() {
         loading={loading || loansLoading}
         error={error}
         onRetry={retry}
-        searchKeys={["loanNumber", "fullName", "email", "phoneNumber", "address"]}
+        searchKeys={["customerNumber", "loanNumber", "fullName", "email", "phoneNumber", "address"]}
         pageSize={8}
         emptyMessage="Belum ada nasabah. Gunakan tombol Tambah untuk membuat data pertama."
         title="Nasabah"

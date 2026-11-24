@@ -30,7 +30,7 @@ export function LoanList({
         <table className="w-full text-center text-sm">
           <thead>
             <tr className="border-b border-slate-100 text-xs text-slate-400 uppercase">
-              <th className="pb-3 font-semibold">Loan ID & Borrower</th>
+              <th className="pb-3 font-semibold">No. Pinjaman & Nasabah</th>
               <th className="pb-3 font-semibold">Amount & Tenor</th>
               <th className="pb-3 font-semibold">Status</th>
               <th className="pb-3 font-semibold">Action</th>

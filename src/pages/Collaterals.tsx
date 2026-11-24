@@ -45,7 +45,7 @@ export default function CollateralsPage() {
   }
 
   const columns = [
-    { key: "id", header: "ID" },
+    { key: "collateralNumber", header: "No. Agunan" },
     {
       key: "type",
       header: "Tipe",
@@ -94,7 +94,7 @@ export default function CollateralsPage() {
         loading={loading}
         error={error}
         onRetry={refetch}
-        searchKeys={["documentNumber", "type", "loanNumber", "customerName"]}
+        searchKeys={["collateralNumber", "documentNumber", "type", "loanNumber", "customerName"]}
         pageSize={8}
         emptyMessage="Belum ada agunan. Tambah pinjaman dulu, lalu daftarkan agunannya."
         title="Agunan"

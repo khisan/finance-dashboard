@@ -51,8 +51,7 @@ export default function DisbursementsPage() {
   }
 
   const columns = [
-    { key: "id", header: "ID" },
-    { key: "disbursementNumber", header: "Nomor" },
+    { key: "disbursementNumber", header: "No. Pencairan" },
     {
       key: "loanNumber",
       header: "No. Pinjaman",
@@ -120,6 +119,7 @@ export default function DisbursementsPage() {
       {open && (
         <CreateModal
           title="Tambah Pencairan"
+          subtitle="Nomor pencairan dibuat otomatis oleh backend."
           fields={disbursementCreateFields}
           onSubmit={createDisbursement}
           onSuccess={() => refetch()}
@@ -129,6 +129,7 @@ export default function DisbursementsPage() {
       {editing && (
         <CreateModal
           title="Edit Pencairan"
+          subtitle="Nomor pencairan tidak dapat diubah."
           fields={disbursementCreateFields}
           initialValues={editing.values}
           submitLabel="Simpan Perubahan"

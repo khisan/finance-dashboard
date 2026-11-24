@@ -35,7 +35,7 @@ export default function GuarantorsPage() {
   }
 
   const columns = [
-    { key: "id", header: "ID" },
+    { key: "guarantorNumber", header: "No. Penjamin" },
     { key: "fullName", header: "Nama" },
     { key: "relationship", header: "Hubungan" },
     { key: "email", header: "Email" },
@@ -64,7 +64,7 @@ export default function GuarantorsPage() {
         loading={loading}
         error={error}
         onRetry={refetch}
-        searchKeys={["fullName", "email", "relationship", "loanNumber", "customerName"]}
+        searchKeys={["guarantorNumber", "fullName", "email", "relationship", "loanNumber", "customerName"]}
         pageSize={8}
         emptyMessage="Belum ada penjamin. Tambah pinjaman dulu, lalu daftarkan penjaminnya."
         title="Penjamin"

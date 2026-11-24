@@ -2,6 +2,7 @@ import type { UserRole } from "./enums"
 
 export interface Customer {
   id: string
+  customerNumber: string
   fullName: string
   identityNumber: string
   email: string
@@ -13,6 +14,7 @@ export interface Customer {
 
 export interface CustomerListItem {
   id: string
+  customerNumber: string
   fullName: string
   email: string
   phoneNumber: string

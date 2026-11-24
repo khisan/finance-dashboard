@@ -51,8 +51,7 @@ export default function InvoicesPage() {
   }
 
   const columns = [
-    { key: "id", header: "ID" },
-    { key: "invoiceNumber", header: "Nomor Faktur" },
+    { key: "invoiceNumber", header: "No. Faktur" },
     {
       key: "loanNumber",
       header: "No. Pinjaman",
@@ -119,7 +118,7 @@ export default function InvoicesPage() {
       {open && (
         <CreateModal
           title="Tambah Faktur"
-          subtitle="Total otomatis dihitung backend dari pokok + bunga + denda."
+          subtitle="Nomor faktur dibuat otomatis backend. Total dihitung dari pokok + bunga + denda."
           fields={invoiceCreateFields}
           onSubmit={createInvoice}
           onSuccess={() => refetch()}
@@ -129,7 +128,7 @@ export default function InvoicesPage() {
       {editing && (
         <CreateModal
           title="Edit Faktur"
-          subtitle="Total tetap dihitung ulang backend dari pokok + bunga + denda."
+          subtitle="Nomor faktur tidak dapat diubah. Total dihitung ulang backend."
           fields={invoiceCreateFields}
           initialValues={editing.values}
           submitLabel="Simpan Perubahan"

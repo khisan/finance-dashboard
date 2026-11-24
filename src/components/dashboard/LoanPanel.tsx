@@ -4,7 +4,7 @@ export function LoanPanel({ loan }: { loan: DashboardLoan }) {
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
       <h3 className="border-b border-slate-100 pb-3 text-lg font-bold text-slate-900">
-        Loan Detail: <span className="text-blue-600">{loan.id}</span>
+        No. Pinjaman: <span className="text-blue-600">{loan.id}</span>
       </h3>
 
       <div className="mt-4 space-y-3 text-sm">

@@ -72,7 +72,7 @@ export default function LoansPage() {
         loading={loading}
         error={error}
         onRetry={refetch}
-        searchKeys={["loanNumber", "customerName", "id"]}
+        searchKeys={["loanNumber", "customerName"]}
         pageSize={8}
         emptyMessage="Belum ada pinjaman. Tambah nasabah dulu, lalu buat pinjaman."
         title="Pinjaman"
