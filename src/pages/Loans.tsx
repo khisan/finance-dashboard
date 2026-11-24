@@ -6,6 +6,7 @@ import { loanCreateFields } from "@/forms/createFields"
 import { formatDate, formatIDR } from "@/lib/format"
 import { toFormValues } from "@/lib/formValues"
 import { useAsync } from "@/hooks/useApi"
+import { proposalNotice, useNotice } from "@/hooks/useNotice"
 import { createLoan, getLoanById, getLoans, updateLoan } from "@/services/loanService"
 import type { LoanListItem } from "@/types/loan"
 import { DataTable } from "@/components/DataTable"
@@ -14,6 +15,7 @@ export default function LoansPage() {
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<{ id: string; values: Record<string, string> } | null>(null)
   const [editError, setEditError] = useState<string | null>(null)
+  const { setNotice, node: noticeNode } = useNotice()
   const { data, loading, error, refetch } = useAsync<LoanListItem[]>(
     "loans",
     getLoans,
@@ -66,6 +68,7 @@ export default function LoansPage() {
           {editError}
         </p>
       ) : null}
+      {noticeNode}
       <DataTable<LoanListItem>
         columns={columns}
         rows={data ?? []}
@@ -90,25 +93,29 @@ export default function LoansPage() {
       {open && (
         <CreateModal
           title="Tambah Pinjaman"
-          subtitle="Status awal akan ditetapkan backend sebagai PENDING."
+          subtitle="Proposal menunggu persetujuan finance/admin; status awal PENDING setelah disetujui."
           fields={loanCreateFields}
           onSubmit={createLoan}
-          onSuccess={() => refetch()}
+          onSuccess={(result) => {
+            setNotice(proposalNotice(result))
+            refetch()
+          }}
           onClose={() => setOpen(false)}
         />
       )}
       {editing && (
         <CreateModal
           title="Edit Pinjaman"
-          subtitle="Status tidak bisa diubah lewat form ini (PUT menolak field status)."
+          subtitle="Status tidak bisa diubah lewat form ini; perubahan menunggu approval."
           fields={loanCreateFields}
           initialValues={editing.values}
           submitLabel="Simpan Perubahan"
           onSubmit={(payload) =>
             updateLoan(editing.id, payload as unknown as Parameters<typeof updateLoan>[1])
           }
-          onSuccess={() => {
+          onSuccess={(result) => {
             setEditing(null)
+            setNotice(proposalNotice(result))
             refetch()
           }}
           onClose={() => setEditing(null)}

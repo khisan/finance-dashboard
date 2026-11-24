@@ -1,5 +1,6 @@
 import { apiGet, apiPost, apiPut } from "./http"
 import type { Invoice, InvoiceListItem } from "@/types/invoice"
+import type { ApprovalRequest } from "@/types/approval"
 
 export type InvoiceCreateInput = Pick<
   Invoice,
@@ -24,10 +25,10 @@ export async function getInvoiceById(id: string): Promise<Invoice | null> {
   return result ?? null
 }
 
-export async function createInvoice(body: InvoiceCreateInput): Promise<Invoice> {
-  return apiPost<Invoice>("/invoices", body)
+export async function createInvoice(body: InvoiceCreateInput): Promise<ApprovalRequest> {
+  return apiPost<ApprovalRequest>("/invoices", body)
 }
 
-export async function updateInvoice(id: string, body: InvoiceCreateInput): Promise<Invoice> {
-  return apiPut<Invoice>(`/invoices/${encodeURIComponent(id)}`, body)
+export async function updateInvoice(id: string, body: InvoiceCreateInput): Promise<ApprovalRequest> {
+  return apiPut<ApprovalRequest>(`/invoices/${encodeURIComponent(id)}`, body)
 }

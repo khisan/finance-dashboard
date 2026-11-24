@@ -300,7 +300,7 @@ export default function ResourceDetail({ resource }: { resource: string }) {
       {editing && record ? (
         <CreateModal
           title={`Edit ${config.label}`}
-          subtitle="Perubahan akan disimpan ke backend dengan PUT."
+          subtitle="Perubahan menjadi proposal; diterapkan setelah disetujui finance/admin."
           fields={config.editFields}
           initialValues={toFormValues(config.editFields, record)}
           submitLabel="Simpan Perubahan"

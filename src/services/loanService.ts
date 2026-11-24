@@ -5,6 +5,7 @@ import { getGuarantorsByLoanId } from "./guarantorService"
 import { getInvoicesByLoanId } from "./invoiceService"
 import { getDisbursementsByLoanId } from "./disbursementService"
 import type { Loan, LoanListItem, LoanDetail } from "@/types/loan"
+import type { ApprovalRequest } from "@/types/approval"
 
 export interface LoanCreateInput {
   customerId: string
@@ -58,11 +59,11 @@ export async function getLoanDetail(id: string): Promise<LoanDetail | null> {
   }
 }
 
-export async function createLoan(body: LoanCreateInput): Promise<Loan> {
-  return apiPost<Loan>("/loans", body)
+export async function createLoan(body: LoanCreateInput): Promise<ApprovalRequest> {
+  return apiPost<ApprovalRequest>("/loans", body)
 }
 
 /** PUT /api/loans/{id} — status tidak boleh dikirim, diatur lewat PATCH. */
-export async function updateLoan(id: string, body: LoanCreateInput): Promise<Loan> {
-  return apiPut<Loan>(`/loans/${encodeURIComponent(id)}`, body)
+export async function updateLoan(id: string, body: LoanCreateInput): Promise<ApprovalRequest> {
+  return apiPut<ApprovalRequest>(`/loans/${encodeURIComponent(id)}`, body)
 }

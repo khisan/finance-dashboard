@@ -26,3 +26,16 @@ export function formatDate(value: string | null | undefined): string {
   if (Number.isNaN(d.getTime())) return String(value)
   return d.toLocaleDateString("id-ID", { year: "numeric", month: "short", day: "numeric" })
 }
+
+export function formatDateTime(value: string | null | undefined): string {
+  if (!value) return "—"
+  const d = new Date(value)
+  if (Number.isNaN(d.getTime())) return String(value)
+  return d.toLocaleString("id-ID", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  })
+}

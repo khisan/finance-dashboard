@@ -4,6 +4,7 @@ import { CreateModal } from "@/components/CreateModal"
 import { RowActions } from "@/components/RowActions"
 import { guarantorCreateFields } from "@/forms/createFields"
 import { useAsync } from "@/hooks/useApi"
+import { proposalNotice, useNotice } from "@/hooks/useNotice"
 import { toFormValues } from "@/lib/formValues"
 import {
   createGuarantor,
@@ -18,6 +19,7 @@ export default function GuarantorsPage() {
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<{ id: string; values: Record<string, string> } | null>(null)
   const [editError, setEditError] = useState<string | null>(null)
+  const { setNotice, node: noticeNode } = useNotice()
   const { data, loading, error, refetch } = useAsync<GuarantorListItem[]>(
     "guarantors",
     getGuarantors,
@@ -58,6 +60,7 @@ export default function GuarantorsPage() {
           {editError}
         </p>
       ) : null}
+      {noticeNode}
       <DataTable<GuarantorListItem>
         columns={columns}
         rows={data ?? []}
@@ -80,9 +83,13 @@ export default function GuarantorsPage() {
       {open && (
         <CreateModal
           title="Tambah Penjamin"
+          subtitle="Proposal menunggu persetujuan finance/admin sebelum data disimpan."
           fields={guarantorCreateFields}
           onSubmit={createGuarantor}
-          onSuccess={() => refetch()}
+          onSuccess={(result) => {
+            setNotice(proposalNotice(result))
+            refetch()
+          }}
           onClose={() => setOpen(false)}
         />
       )}
@@ -95,8 +102,9 @@ export default function GuarantorsPage() {
           onSubmit={(payload) =>
             updateGuarantor(editing.id, payload as unknown as Parameters<typeof updateGuarantor>[1])
           }
-          onSuccess={() => {
+          onSuccess={(result) => {
             setEditing(null)
+            setNotice(proposalNotice(result))
             refetch()
           }}
           onClose={() => setEditing(null)}

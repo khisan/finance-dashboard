@@ -36,6 +36,18 @@ export async function apiPut<T>(path: string, body: unknown): Promise<T> {
   return unwrap<T>(response)
 }
 
+/** PATCH wrapper for approval decisions and other partial updates. */
+export async function apiPatch<T>(path: string, body: unknown): Promise<T> {
+  const response = await api.patch<ApiPayload<T>>(path, body)
+  return unwrap<T>(response)
+}
+
+/** DELETE wrapper for cancelling a pending proposal. */
+export async function apiDelete<T>(path: string): Promise<T> {
+  const response = await api.delete<ApiPayload<T>>(path)
+  return unwrap<T>(response)
+}
+
 /** Normalize axios/network errors into a short user-facing message. */
 export function getErrorMessage(error: unknown): string {
   // Axios errors contain the backend message in response.data.message —

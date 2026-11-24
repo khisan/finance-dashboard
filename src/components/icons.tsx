@@ -16,6 +16,8 @@ import {
   Search,
   Menu,
   ChevronRight,
+  ClipboardCheck,
+  History,
 } from "lucide-react"
 
 type IconProps = LucideProps
@@ -35,3 +37,5 @@ export const ClockIcon = (props: IconProps) => <Clock {...props} />
 export const SearchIcon = (props: IconProps) => <Search {...props} />
 export const MenuIcon = (props: IconProps) => <Menu {...props} />
 export const ChevronRightIcon = (props: IconProps) => <ChevronRight {...props} />
+export const ApprovalIcon = (props: IconProps) => <ClipboardCheck {...props} />
+export const AuditIcon = (props: IconProps) => <History {...props} />

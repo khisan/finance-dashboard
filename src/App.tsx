@@ -12,6 +12,8 @@ import Invoices from "./pages/Invoices"
 import Disbursements from "./pages/Disbursements"
 import Users from "./pages/Users"
 import Settings from "./pages/Settings"
+import ApprovalsPage from "./pages/Approvals"
+import AuditTrailPage from "./pages/AuditTrail"
 import ResourceDetail from "./pages/ResourceDetail"
 import LoanDetail from "./pages/LoanDetail"
 
@@ -31,6 +33,8 @@ function App() {
             <Route path="invoices" element={<Invoices />} />
             <Route path="disbursements" element={<Disbursements />} />
             <Route path="users" element={<Users />} />
+            <Route path="approvals" element={<ApprovalsPage />} />
+            <Route path="audit-trail" element={<AuditTrailPage />} />
             <Route path="settings" element={<Settings />} />
             <Route path="customers/:id" element={<ResourceDetail resource="customers" />} />
             <Route path="loans/:id" element={<LoanDetail />} />

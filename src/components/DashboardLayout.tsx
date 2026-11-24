@@ -20,6 +20,8 @@ const pageTitles: Record<string, string> = {
   "/invoices": "Faktur",
   "/disbursements": "Pencairan",
   "/users": "Pengguna",
+  "/approvals": "Persetujuan",
+  "/audit-trail": "Audit Trail",
   "/settings": "Pengaturan",
 }
 
@@ -32,6 +34,8 @@ const pageSubtitles: Record<string, string> = {
   "/invoices": "Data faktur tagihan",
   "/disbursements": "Data pencairan pinjaman",
   "/users": "Data pengguna aplikasi",
+  "/approvals": "Proposal perubahan yang menunggu keputusan",
+  "/audit-trail": "Riwayat pembuat, pengubah, dan penyetuju data",
   "/settings": "Pengaturan aplikasi",
 }
 

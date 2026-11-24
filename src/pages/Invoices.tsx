@@ -6,6 +6,7 @@ import { invoiceCreateFields } from "@/forms/createFields"
 import { formatDate, formatIDR } from "@/lib/format"
 import { toFormValues } from "@/lib/formValues"
 import { useAsync } from "@/hooks/useApi"
+import { proposalNotice, useNotice } from "@/hooks/useNotice"
 import {
   createInvoice,
   getInvoiceById,
@@ -34,6 +35,7 @@ export default function InvoicesPage() {
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<{ id: string; values: Record<string, string> } | null>(null)
   const [editError, setEditError] = useState<string | null>(null)
+  const { setNotice, node: noticeNode } = useNotice()
   const { data, loading, error, refetch } = useAsync<InvoiceListItem[]>(
     "invoices",
     getInvoices,
@@ -96,6 +98,7 @@ export default function InvoicesPage() {
           {editError}
         </p>
       ) : null}
+      {noticeNode}
       <DataTable<InvoiceListItem>
         columns={columns}
         rows={data ?? []}
@@ -118,25 +121,29 @@ export default function InvoicesPage() {
       {open && (
         <CreateModal
           title="Tambah Faktur"
-          subtitle="Nomor faktur dibuat otomatis backend. Total dihitung dari pokok + bunga + denda."
+          subtitle="Nomor dibuat otomatis backend, total dihitung ulang. Proposal menunggu approval."
           fields={invoiceCreateFields}
           onSubmit={createInvoice}
-          onSuccess={() => refetch()}
+          onSuccess={(result) => {
+            setNotice(proposalNotice(result))
+            refetch()
+          }}
           onClose={() => setOpen(false)}
         />
       )}
       {editing && (
         <CreateModal
           title="Edit Faktur"
-          subtitle="Nomor faktur tidak dapat diubah. Total dihitung ulang backend."
+          subtitle="Nomor tidak dapat diubah. Perubahan diterapkan setelah approval."
           fields={invoiceCreateFields}
           initialValues={editing.values}
           submitLabel="Simpan Perubahan"
           onSubmit={(payload) =>
             updateInvoice(editing.id, payload as unknown as Parameters<typeof updateInvoice>[1])
           }
-          onSuccess={() => {
+          onSuccess={(result) => {
             setEditing(null)
+            setNotice(proposalNotice(result))
             refetch()
           }}
           onClose={() => setEditing(null)}

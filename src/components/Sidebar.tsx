@@ -11,6 +11,8 @@ import {
   MenuIcon,
   PersonIcon,
   ChevronRightIcon,
+  ApprovalIcon,
+  AuditIcon,
 } from "./icons"
 
 // Menu berdasarkan resource controller loan-system:
@@ -44,6 +46,13 @@ const navGroups = [
         path: "/disbursements",
         icon: DisbursementsIcon,
       },
+    ],
+  },
+  {
+    label: "Kontrol",
+    items: [
+      { name: "Persetujuan", path: "/approvals", icon: ApprovalIcon },
+      { name: "Audit Trail", path: "/audit-trail", icon: AuditIcon },
     ],
   },
   {

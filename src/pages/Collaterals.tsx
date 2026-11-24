@@ -4,6 +4,7 @@ import { CreateModal } from "@/components/CreateModal"
 import { RowActions } from "@/components/RowActions"
 import { collateralCreateFields } from "@/forms/createFields"
 import { useAsync } from "@/hooks/useApi"
+import { proposalNotice, useNotice } from "@/hooks/useNotice"
 import { formatIDR } from "@/lib/format"
 import { toFormValues } from "@/lib/formValues"
 import {
@@ -28,6 +29,7 @@ export default function CollateralsPage() {
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<{ id: string; values: Record<string, string> } | null>(null)
   const [editError, setEditError] = useState<string | null>(null)
+  const { setNotice, node: noticeNode } = useNotice()
   const { data, loading, error, refetch } = useAsync<CollateralListItem[]>(
     "collaterals",
     getCollaterals,
@@ -88,6 +90,7 @@ export default function CollateralsPage() {
           {editError}
         </p>
       ) : null}
+      {noticeNode}
       <DataTable<CollateralListItem>
         columns={columns}
         rows={data ?? []}
@@ -110,9 +113,13 @@ export default function CollateralsPage() {
       {open && (
         <CreateModal
           title="Tambah Agunan"
+          subtitle="Proposal menunggu persetujuan finance/admin sebelum data disimpan."
           fields={collateralCreateFields}
           onSubmit={createCollateral}
-          onSuccess={() => refetch()}
+          onSuccess={(result) => {
+            setNotice(proposalNotice(result))
+            refetch()
+          }}
           onClose={() => setOpen(false)}
         />
       )}
@@ -125,8 +132,9 @@ export default function CollateralsPage() {
           onSubmit={(payload) =>
             updateCollateral(editing.id, payload as unknown as Parameters<typeof updateCollateral>[1])
           }
-          onSuccess={() => {
+          onSuccess={(result) => {
             setEditing(null)
+            setNotice(proposalNotice(result))
             refetch()
           }}
           onClose={() => setEditing(null)}

@@ -1,5 +1,6 @@
 import { apiGet, apiPost, apiPut } from "./http"
 import type { Disbursement, DisbursementListItem } from "@/types/disbursement"
+import type { ApprovalRequest } from "@/types/approval"
 
 export type DisbursementCreateInput = Pick<
   Disbursement,
@@ -25,13 +26,13 @@ export async function getDisbursementById(id: string): Promise<Disbursement | nu
 
 export async function createDisbursement(
   body: DisbursementCreateInput,
-): Promise<Disbursement> {
-  return apiPost<Disbursement>("/disbursements", body)
+): Promise<ApprovalRequest> {
+  return apiPost<ApprovalRequest>("/disbursements", body)
 }
 
 export async function updateDisbursement(
   id: string,
   body: DisbursementCreateInput,
-): Promise<Disbursement> {
-  return apiPut<Disbursement>(`/disbursements/${encodeURIComponent(id)}`, body)
+): Promise<ApprovalRequest> {
+  return apiPut<ApprovalRequest>(`/disbursements/${encodeURIComponent(id)}`, body)
 }

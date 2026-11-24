@@ -174,7 +174,7 @@ export default function LoanDetail() {
       {editing && record ? (
         <CreateModal
           title="Edit Pinjaman"
-          subtitle="Perubahan akan disimpan ke backend dengan PUT."
+          subtitle="Perubahan menjadi proposal; diterapkan setelah disetujui finance/admin."
           fields={loanCreateFields}
           initialValues={toFormValues(loanCreateFields, record)}
           submitLabel="Simpan Perubahan"

@@ -1,5 +1,6 @@
 import { apiGet, apiPost, apiPut } from "./http"
 import type { Guarantor, GuarantorListItem } from "@/types/guarantor"
+import type { ApprovalRequest } from "@/types/approval"
 
 export type GuarantorCreateInput = Omit<
   Guarantor,
@@ -19,13 +20,13 @@ export async function getGuarantorById(id: string): Promise<Guarantor | null> {
   return result ?? null
 }
 
-export async function createGuarantor(body: GuarantorCreateInput): Promise<Guarantor> {
-  return apiPost<Guarantor>("/guarantors", body)
+export async function createGuarantor(body: GuarantorCreateInput): Promise<ApprovalRequest> {
+  return apiPost<ApprovalRequest>("/guarantors", body)
 }
 
 export async function updateGuarantor(
   id: string,
   body: GuarantorCreateInput,
-): Promise<Guarantor> {
-  return apiPut<Guarantor>(`/guarantors/${encodeURIComponent(id)}`, body)
+): Promise<ApprovalRequest> {
+  return apiPut<ApprovalRequest>(`/guarantors/${encodeURIComponent(id)}`, body)
 }

@@ -4,6 +4,7 @@ import { CreateModal } from "@/components/CreateModal"
 import { RowActions } from "@/components/RowActions"
 import { customerCreateFields } from "@/forms/createFields"
 import { useAsync } from "@/hooks/useApi"
+import { proposalNotice, useNotice } from "@/hooks/useNotice"
 import { toFormValues } from "@/lib/formValues"
 import {
   createCustomer,
@@ -22,6 +23,7 @@ export default function CustomersPage() {
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<{ id: string; values: Record<string, string> } | null>(null)
   const [editError, setEditError] = useState<string | null>(null)
+  const { setNotice, node: noticeNode } = useNotice()
   const { data, loading, error, refetch } = useAsync<CustomerListItem[]>(
     "customers",
     getCustomers,
@@ -98,6 +100,7 @@ export default function CustomersPage() {
           {editError}
         </p>
       ) : null}
+      {noticeNode}
       <DataTable<CustomerRow>
         columns={columns}
         rows={rows}
@@ -120,25 +123,29 @@ export default function CustomersPage() {
       {open && (
         <CreateModal
           title="Tambah Nasabah"
-          subtitle="Data akan langsung disimpan ke backend."
+          subtitle="Proposal menunggu persetujuan finance/admin sebelum data disimpan."
           fields={customerCreateFields}
           onSubmit={createCustomer}
-          onSuccess={() => refetch()}
+          onSuccess={(result) => {
+            setNotice(proposalNotice(result))
+            refetch()
+          }}
           onClose={() => setOpen(false)}
         />
       )}
       {editing && (
         <CreateModal
           title="Edit Nasabah"
-          subtitle="Perubahan disimpan dengan PUT /api/customers/{id}."
+          subtitle="Perubahan menjadi proposal dan diterapkan setelah disetujui finance/admin."
           fields={customerCreateFields}
           initialValues={editing.values}
           submitLabel="Simpan Perubahan"
           onSubmit={(payload) =>
             updateCustomer(editing.id, payload as unknown as Parameters<typeof updateCustomer>[1])
           }
-          onSuccess={() => {
+          onSuccess={(result) => {
             setEditing(null)
+            setNotice(proposalNotice(result))
             refetch()
           }}
           onClose={() => setEditing(null)}

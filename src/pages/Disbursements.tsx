@@ -6,6 +6,7 @@ import { disbursementCreateFields } from "@/forms/createFields"
 import { formatDate, formatIDR } from "@/lib/format"
 import { toFormValues } from "@/lib/formValues"
 import { useAsync } from "@/hooks/useApi"
+import { proposalNotice, useNotice } from "@/hooks/useNotice"
 import {
   createDisbursement,
   getDisbursementById,
@@ -34,6 +35,7 @@ export default function DisbursementsPage() {
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<{ id: string; values: Record<string, string> } | null>(null)
   const [editError, setEditError] = useState<string | null>(null)
+  const { setNotice, node: noticeNode } = useNotice()
   const { data, loading, error, refetch } = useAsync<DisbursementListItem[]>(
     "disbursements",
     getDisbursements,
@@ -97,6 +99,7 @@ export default function DisbursementsPage() {
           {editError}
         </p>
       ) : null}
+      {noticeNode}
       <DataTable<DisbursementListItem>
         columns={columns}
         rows={data ?? []}
@@ -119,25 +122,29 @@ export default function DisbursementsPage() {
       {open && (
         <CreateModal
           title="Tambah Pencairan"
-          subtitle="Nomor pencairan dibuat otomatis oleh backend."
+          subtitle="Nomor dibuat otomatis backend. Proposal menunggu approval."
           fields={disbursementCreateFields}
           onSubmit={createDisbursement}
-          onSuccess={() => refetch()}
+          onSuccess={(result) => {
+            setNotice(proposalNotice(result))
+            refetch()
+          }}
           onClose={() => setOpen(false)}
         />
       )}
       {editing && (
         <CreateModal
           title="Edit Pencairan"
-          subtitle="Nomor pencairan tidak dapat diubah."
+          subtitle="Nomor tidak dapat diubah. Perubahan diterapkan setelah approval."
           fields={disbursementCreateFields}
           initialValues={editing.values}
           submitLabel="Simpan Perubahan"
           onSubmit={(payload) =>
             updateDisbursement(editing.id, payload as unknown as Parameters<typeof updateDisbursement>[1])
           }
-          onSuccess={() => {
+          onSuccess={(result) => {
             setEditing(null)
+            setNotice(proposalNotice(result))
             refetch()
           }}
           onClose={() => setEditing(null)}

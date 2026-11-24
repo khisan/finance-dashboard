@@ -7,11 +7,10 @@ import { CreateModal } from "@/components/CreateModal"
 import { loanCreateFields } from "@/forms/createFields"
 import {
   initialLoans,
-  toDashboardLoan,
   type DashboardLoan,
 } from "@/lib/dashboard"
 import { createLoan } from "@/services/loanService"
-import type { Loan } from "@/types/loan"
+import type { ApprovalRequest } from "@/types/approval"
 
 /** Operation overview: static metrics + dummy loans + newly created loans. */
 export const Dashboard = () => {
@@ -23,12 +22,10 @@ export const Dashboard = () => {
   const [detailLoan, setDetailLoan] = useState<DashboardLoan | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
 
-  const handleCreated = (loan: Loan) => {
-    const created = toDashboardLoan(loan)
-    setLoans((prev) => [created, ...prev])
-    setSelectedLoan(created)
+  const handleCreated = (proposal: ApprovalRequest) => {
+    // Data is only written after approval, so don't add it to the local list yet.
     setNotice(
-      `Pinjaman ${created.id} berhasil dibuat dengan status ${created.status}.`,
+      `Proposal ${proposal.businessNumber ?? proposal.id} dikirim. Pinjaman akan muncul setelah disetujui finance/admin.`,
     )
   }
 
@@ -85,7 +82,7 @@ export const Dashboard = () => {
       {open ? (
         <CreateModal
           title="Buat Pinjaman Baru"
-          subtitle="Data akan disimpan ke backend; status awal PENDING."
+          subtitle="Proposal menunggu persetujuan finance/admin; status awal PENDING setelah disetujui."
           fields={loanCreateFields}
           onSubmit={createLoan}
           onSuccess={handleCreated}
