@@ -1,4 +1,5 @@
 import type { AxiosError, AxiosResponse } from "axios"
+import { notifyApprovalChanged } from "@/lib/approvalEvents"
 import api from "./api"
 
 export type ApiPayload<T> = {
@@ -27,25 +28,33 @@ export async function apiGet<T>(path: string): Promise<T> {
 /** POST wrapper for create flows — uses the same backend envelope as GET. */
 export async function apiPost<T>(path: string, body: unknown): Promise<T> {
   const response = await api.post<ApiPayload<T>>(path, body)
-  return unwrap<T>(response)
+  const data = unwrap<T>(response)
+  notifyApprovalChanged()
+  return data
 }
 
 /** PUT wrapper for edit flows — same envelope, full-body replace. */
 export async function apiPut<T>(path: string, body: unknown): Promise<T> {
   const response = await api.put<ApiPayload<T>>(path, body)
-  return unwrap<T>(response)
+  const data = unwrap<T>(response)
+  notifyApprovalChanged()
+  return data
 }
 
 /** PATCH wrapper for approval decisions and other partial updates. */
 export async function apiPatch<T>(path: string, body: unknown): Promise<T> {
   const response = await api.patch<ApiPayload<T>>(path, body)
-  return unwrap<T>(response)
+  const data = unwrap<T>(response)
+  notifyApprovalChanged()
+  return data
 }
 
 /** DELETE wrapper for cancelling a pending proposal. */
 export async function apiDelete<T>(path: string): Promise<T> {
   const response = await api.delete<ApiPayload<T>>(path)
-  return unwrap<T>(response)
+  const data = unwrap<T>(response)
+  notifyApprovalChanged()
+  return data
 }
 
 /** Normalize axios/network errors into a short user-facing message. */
