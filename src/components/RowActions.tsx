@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom"
 import { Eye, Pencil } from "lucide-react"
+import { useCanWrite } from "@/hooks/useAuth"
 
 /** Compact detail/edit buttons used as the last column of resource tables. */
 export function RowActions({
@@ -13,6 +13,8 @@ export function RowActions({
   editDisabled?: boolean
   editTitle?: string
 }) {
+  const canWrite = useCanWrite()
+
   return (
     <>
       <a
@@ -24,17 +26,19 @@ export function RowActions({
       >
         <Eye className="h-4.5 w-4.5" />
       </a>
-      <button
-        type="button"
-        onClick={onEdit}
-        disabled={editDisabled}
-        aria-label="Edit"
-        title={editTitle ?? "Edit"}
-        data-action="edit"
-        className="rounded-lg border-0 p-1.5 text-white bg-amber-600 hover:bg-amber-500 disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
-      >
-        <Pencil className="h-4.5 w-4.5" />
-      </button>
+      {canWrite ? (
+        <button
+          type="button"
+          onClick={onEdit}
+          disabled={editDisabled}
+          aria-label="Edit"
+          title={editTitle ?? "Edit"}
+          data-action="edit"
+          className="rounded-lg border-0 p-1.5 text-white bg-amber-600 hover:bg-amber-500 disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
+        >
+          <Pencil className="h-4.5 w-4.5" />
+        </button>
+      ) : null}
     </>
   )
 }

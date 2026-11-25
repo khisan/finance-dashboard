@@ -5,6 +5,7 @@ import { LoanPanel } from "@/components/dashboard/LoanPanel"
 import { MetricCards } from "@/components/dashboard/MetricCards"
 import { CreateModal } from "@/components/CreateModal"
 import { loanCreateFields } from "@/forms/createFields"
+import { useCanWrite } from "@/hooks/useAuth"
 import {
   initialLoans,
   type DashboardLoan,
@@ -14,6 +15,7 @@ import type { ApprovalRequest } from "@/types/approval"
 
 /** Operation overview: static metrics + dummy loans + newly created loans. */
 export const Dashboard = () => {
+  const canWrite = useCanWrite()
   const [loans, setLoans] = useState<DashboardLoan[]>(initialLoans)
   const [selectedLoan, setSelectedLoan] = useState<DashboardLoan>(
     initialLoans[0],
@@ -40,13 +42,15 @@ export const Dashboard = () => {
             Kelola pinjaman, jaminan (collateral), pencairan, dan pelunasan
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          className="cursor-pointer flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-500/20 hover:bg-blue-700 transition-colors"
-        >
-          + Create New Loan
-        </button>
+        {canWrite ? (
+          <button
+            type="button"
+            onClick={() => setOpen(true)}
+            className="cursor-pointer flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-500/20 hover:bg-blue-700 transition-colors"
+          >
+            + Create New Loan
+          </button>
+        ) : null}
       </header>
 
       {notice ? (
@@ -79,7 +83,7 @@ export const Dashboard = () => {
         </div>
       </div>
 
-      {open ? (
+      {canWrite && open ? (
         <CreateModal
           title="Buat Pinjaman Baru"
           subtitle="Proposal menunggu persetujuan finance/admin; status awal PENDING setelah disetujui."

@@ -6,6 +6,7 @@ import { disbursementCreateFields } from "@/forms/createFields"
 import { formatDate, formatIDR } from "@/lib/format"
 import { toFormValues } from "@/lib/formValues"
 import { useAsync } from "@/hooks/useApi"
+import { useCanWrite } from "@/hooks/useAuth"
 import { proposalNotice, useNotice } from "@/hooks/useNotice"
 import {
   createDisbursement,
@@ -32,6 +33,7 @@ const STATUS_CLASS: Record<DisbursementStatus, string> = {
 }
 
 export default function DisbursementsPage() {
+  const canWrite = useCanWrite()
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<{ id: string; values: Record<string, string> } | null>(null)
   const [editError, setEditError] = useState<string | null>(null)
@@ -111,7 +113,7 @@ export default function DisbursementsPage() {
         emptyMessage="Belum ada pencairan. Tambah pinjaman dulu, lalu catat pencairannya."
         title="Pencairan"
         subtitle="Data disbursement / pencairan pinjaman"
-        action={<Button onClick={() => setOpen(true)}>+ Tambah Pencairan</Button>}
+        action={canWrite ? <Button onClick={() => setOpen(true)}>+ Tambah Pencairan</Button> : undefined}
         rowActions={(r) => (
           <RowActions
             detailPath={`/disbursements/${encodeURIComponent(r.id)}`}
@@ -119,7 +121,7 @@ export default function DisbursementsPage() {
           />
         )}
       />
-      {open && (
+      {canWrite && open && (
         <CreateModal
           title="Tambah Pencairan"
           subtitle="Nomor dibuat otomatis backend. Proposal menunggu approval."
@@ -132,7 +134,7 @@ export default function DisbursementsPage() {
           onClose={() => setOpen(false)}
         />
       )}
-      {editing && (
+      {canWrite && editing && (
         <CreateModal
           title="Edit Pencairan"
           subtitle="Nomor tidak dapat diubah. Perubahan diterapkan setelah approval."

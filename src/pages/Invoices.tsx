@@ -6,6 +6,7 @@ import { invoiceCreateFields } from "@/forms/createFields"
 import { formatDate, formatIDR } from "@/lib/format"
 import { toFormValues } from "@/lib/formValues"
 import { useAsync } from "@/hooks/useApi"
+import { useCanWrite } from "@/hooks/useAuth"
 import { proposalNotice, useNotice } from "@/hooks/useNotice"
 import {
   createInvoice,
@@ -32,6 +33,7 @@ const STATUS_CLASS: Record<InvoiceStatus, string> = {
 }
 
 export default function InvoicesPage() {
+  const canWrite = useCanWrite()
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<{ id: string; values: Record<string, string> } | null>(null)
   const [editError, setEditError] = useState<string | null>(null)
@@ -110,7 +112,7 @@ export default function InvoicesPage() {
         emptyMessage="Belum ada faktur. Tambah pinjaman dulu, lalu buat fakturnya."
         title="Faktur Tagihan"
         subtitle="Data invoice / faktur tagihan"
-        action={<Button onClick={() => setOpen(true)}>+ Tambah Faktur</Button>}
+        action={canWrite ? <Button onClick={() => setOpen(true)}>+ Tambah Faktur</Button> : undefined}
         rowActions={(r) => (
           <RowActions
             detailPath={`/invoices/${encodeURIComponent(r.id)}`}
@@ -118,7 +120,7 @@ export default function InvoicesPage() {
           />
         )}
       />
-      {open && (
+      {canWrite && open && (
         <CreateModal
           title="Tambah Faktur"
           subtitle="Nomor dibuat otomatis backend, total dihitung ulang. Proposal menunggu approval."
@@ -131,7 +133,7 @@ export default function InvoicesPage() {
           onClose={() => setOpen(false)}
         />
       )}
-      {editing && (
+      {canWrite && editing && (
         <CreateModal
           title="Edit Faktur"
           subtitle="Nomor tidak dapat diubah. Perubahan diterapkan setelah approval."

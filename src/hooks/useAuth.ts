@@ -10,3 +10,9 @@ export const useAuth = () => {
 
   return context
 }
+
+/** Finance is a read-only approver: no create/update/delete on business data. */
+export const useCanWrite = (): boolean => {
+  const { user } = useAuth()
+  return Boolean(user) && user?.role !== "finance"
+}

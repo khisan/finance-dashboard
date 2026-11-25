@@ -5,11 +5,13 @@ import { Button } from "@/components/ui"
 import { CreateModal } from "@/components/CreateModal"
 import { userCreateFields, userEditFields } from "@/forms/createFields"
 import { useAsync } from "@/hooks/useApi"
+import { useCanWrite } from "@/hooks/useAuth"
 import { toFormValues } from "@/lib/formValues"
 import { createUser, getUsers, updateUser } from "@/services/userService"
 import type { User } from "@/types/user"
 
 export default function UsersPage() {
+  const canWrite = useCanWrite()
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<{ id: string; values: Record<string, string> } | null>(null)
   const [editError, setEditError] = useState<string | null>(null)
@@ -52,7 +54,7 @@ export default function UsersPage() {
         emptyMessage="Belum ada pengguna. Tambahkan pengguna baru."
         title="Pengguna"
         subtitle="Kelola pengguna — klik ikon mata untuk detail atau pensil untuk edit"
-        action={<Button onClick={() => setOpen(true)}>+ Tambah User</Button>}
+        action={canWrite ? <Button onClick={() => setOpen(true)}>+ Tambah User</Button> : undefined}
         rowActions={(r) => (
           <RowActions
             detailPath={`/users/${encodeURIComponent(r.email)}`}
@@ -61,7 +63,7 @@ export default function UsersPage() {
         )}
       />
 
-      {open && (
+      {canWrite && open && (
         <CreateModal
           title="Tambah Pengguna"
           subtitle="Akun baru langsung aktif di backend."
@@ -71,7 +73,7 @@ export default function UsersPage() {
           onClose={() => setOpen(false)}
         />
       )}
-      {editing && (
+      {canWrite && editing && (
         <CreateModal
           title="Edit Pengguna"
           subtitle="Password dikosongkan berarti kunci lama tetap dipakai."

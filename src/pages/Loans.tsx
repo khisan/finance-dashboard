@@ -6,12 +6,14 @@ import { loanCreateFields } from "@/forms/createFields"
 import { formatDate, formatIDR } from "@/lib/format"
 import { toFormValues } from "@/lib/formValues"
 import { useAsync } from "@/hooks/useApi"
+import { useCanWrite } from "@/hooks/useAuth"
 import { proposalNotice, useNotice } from "@/hooks/useNotice"
 import { createLoan, getLoanById, getLoans, updateLoan } from "@/services/loanService"
 import type { LoanListItem } from "@/types/loan"
 import { DataTable } from "@/components/DataTable"
 
 export default function LoansPage() {
+  const canWrite = useCanWrite()
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<{ id: string; values: Record<string, string> } | null>(null)
   const [editError, setEditError] = useState<string | null>(null)
@@ -81,7 +83,9 @@ export default function LoansPage() {
         title="Pinjaman"
         subtitle="Data peminjaman nasabah"
         action={
-          <Button onClick={() => setOpen(true)}>+ Tambah Pinjaman</Button>
+          canWrite ? (
+            <Button onClick={() => setOpen(true)}>+ Tambah Pinjaman</Button>
+          ) : undefined
         }
         rowActions={(r) => (
           <RowActions
@@ -90,7 +94,7 @@ export default function LoansPage() {
           />
         )}
       />
-      {open && (
+      {canWrite && open && (
         <CreateModal
           title="Tambah Pinjaman"
           subtitle="Proposal menunggu persetujuan finance/admin; status awal PENDING setelah disetujui."
@@ -103,7 +107,7 @@ export default function LoansPage() {
           onClose={() => setOpen(false)}
         />
       )}
-      {editing && (
+      {canWrite && editing && (
         <CreateModal
           title="Edit Pinjaman"
           subtitle="Status tidak bisa diubah lewat form ini; perubahan menunggu approval."

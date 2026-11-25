@@ -4,6 +4,7 @@ import { CreateModal } from "@/components/CreateModal"
 import { RowActions } from "@/components/RowActions"
 import { collateralCreateFields } from "@/forms/createFields"
 import { useAsync } from "@/hooks/useApi"
+import { useCanWrite } from "@/hooks/useAuth"
 import { proposalNotice, useNotice } from "@/hooks/useNotice"
 import { formatIDR } from "@/lib/format"
 import { toFormValues } from "@/lib/formValues"
@@ -26,6 +27,7 @@ const TYPE_LABEL: Record<CollateralType, string> = {
 }
 
 export default function CollateralsPage() {
+  const canWrite = useCanWrite()
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<{ id: string; values: Record<string, string> } | null>(null)
   const [editError, setEditError] = useState<string | null>(null)
@@ -102,7 +104,7 @@ export default function CollateralsPage() {
         emptyMessage="Belum ada agunan. Tambah pinjaman dulu, lalu daftarkan agunannya."
         title="Agunan"
         subtitle="Data collateral / agunan pinjaman"
-        action={<Button onClick={() => setOpen(true)}>+ Tambah Agunan</Button>}
+        action={canWrite ? <Button onClick={() => setOpen(true)}>+ Tambah Agunan</Button> : undefined}
         rowActions={(r) => (
           <RowActions
             detailPath={`/collaterals/${encodeURIComponent(r.id)}`}
@@ -110,7 +112,7 @@ export default function CollateralsPage() {
           />
         )}
       />
-      {open && (
+      {canWrite && open && (
         <CreateModal
           title="Tambah Agunan"
           subtitle="Proposal menunggu persetujuan finance/admin sebelum data disimpan."
@@ -123,7 +125,7 @@ export default function CollateralsPage() {
           onClose={() => setOpen(false)}
         />
       )}
-      {editing && (
+      {canWrite && editing && (
         <CreateModal
           title="Edit Agunan"
           fields={collateralCreateFields}

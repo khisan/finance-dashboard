@@ -4,6 +4,7 @@ import { CreateModal } from "@/components/CreateModal"
 import { RowActions } from "@/components/RowActions"
 import { customerCreateFields } from "@/forms/createFields"
 import { useAsync } from "@/hooks/useApi"
+import { useCanWrite } from "@/hooks/useAuth"
 import { proposalNotice, useNotice } from "@/hooks/useNotice"
 import { toFormValues } from "@/lib/formValues"
 import {
@@ -20,6 +21,7 @@ import { DataTable } from "@/components/DataTable"
 type CustomerRow = CustomerListItem & { loanNumber: string }
 
 export default function CustomersPage() {
+  const canWrite = useCanWrite()
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<{ id: string; values: Record<string, string> } | null>(null)
   const [editError, setEditError] = useState<string | null>(null)
@@ -112,7 +114,7 @@ export default function CustomersPage() {
         emptyMessage="Belum ada nasabah. Gunakan tombol Tambah untuk membuat data pertama."
         title="Nasabah"
         subtitle="Data nasabah / borrower"
-        action={<Button onClick={() => setOpen(true)}>+ Tambah Nasabah</Button>}
+        action={canWrite ? <Button onClick={() => setOpen(true)}>+ Tambah Nasabah</Button> : undefined}
         rowActions={(r) => (
           <RowActions
             detailPath={`/customers/${encodeURIComponent(r.id)}`}
@@ -120,7 +122,7 @@ export default function CustomersPage() {
           />
         )}
       />
-      {open && (
+      {canWrite && open && (
         <CreateModal
           title="Tambah Nasabah"
           subtitle="Proposal menunggu persetujuan finance/admin sebelum data disimpan."
@@ -133,7 +135,7 @@ export default function CustomersPage() {
           onClose={() => setOpen(false)}
         />
       )}
-      {editing && (
+      {canWrite && editing && (
         <CreateModal
           title="Edit Nasabah"
           subtitle="Perubahan menjadi proposal dan diterapkan setelah disetujui finance/admin."

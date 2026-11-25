@@ -4,6 +4,7 @@ import { CreateModal } from "@/components/CreateModal"
 import { RowActions } from "@/components/RowActions"
 import { guarantorCreateFields } from "@/forms/createFields"
 import { useAsync } from "@/hooks/useApi"
+import { useCanWrite } from "@/hooks/useAuth"
 import { proposalNotice, useNotice } from "@/hooks/useNotice"
 import { toFormValues } from "@/lib/formValues"
 import {
@@ -16,6 +17,7 @@ import type { GuarantorListItem } from "@/types/guarantor"
 import { DataTable } from "@/components/DataTable"
 
 export default function GuarantorsPage() {
+  const canWrite = useCanWrite()
   const [open, setOpen] = useState(false)
   const [editing, setEditing] = useState<{ id: string; values: Record<string, string> } | null>(null)
   const [editError, setEditError] = useState<string | null>(null)
@@ -72,7 +74,7 @@ export default function GuarantorsPage() {
         emptyMessage="Belum ada penjamin. Tambah pinjaman dulu, lalu daftarkan penjaminnya."
         title="Penjamin"
         subtitle="Data guarantor / penjamin pinjaman"
-        action={<Button onClick={() => setOpen(true)}>+ Tambah Penjamin</Button>}
+        action={canWrite ? <Button onClick={() => setOpen(true)}>+ Tambah Penjamin</Button> : undefined}
         rowActions={(r) => (
           <RowActions
             detailPath={`/guarantors/${encodeURIComponent(r.id)}`}
@@ -80,7 +82,7 @@ export default function GuarantorsPage() {
           />
         )}
       />
-      {open && (
+      {canWrite && open && (
         <CreateModal
           title="Tambah Penjamin"
           subtitle="Proposal menunggu persetujuan finance/admin sebelum data disimpan."
@@ -93,7 +95,7 @@ export default function GuarantorsPage() {
           onClose={() => setOpen(false)}
         />
       )}
-      {editing && (
+      {canWrite && editing && (
         <CreateModal
           title="Edit Penjamin"
           fields={guarantorCreateFields}

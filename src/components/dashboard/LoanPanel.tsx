@@ -1,6 +1,9 @@
+import { useCanWrite } from "@/hooks/useAuth"
 import { formatRupiah, type DashboardLoan } from "@/lib/dashboard"
 
 export function LoanPanel({ loan }: { loan: DashboardLoan }) {
+  const canWrite = useCanWrite()
+
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
       <h3 className="border-b border-slate-100 pb-3 text-lg font-bold text-slate-900">
@@ -41,19 +44,19 @@ export function LoanPanel({ loan }: { loan: DashboardLoan }) {
         </div>
       </div>
 
-      {/* Ations: Disbursement & Settlement*/}
+      {/* Ations: Disbursement & Settlement (read-only for finance) */}
       <div className="mt-6 space-y-2">
-        {loan.status === "PENDING" && (
+        {canWrite && loan.status === "PENDING" ? (
           <button className="cursor-pointer w-full rounded-xl bg-blue-600 py-2.5 text-xs font-bold text-white hover:bg-blue-700 transition-colors">
             Process Disbursement
           </button>
-        )}
+        ) : null}
 
-        {loan.status === "ACTIVE" && (
+        {canWrite && loan.status === "ACTIVE" ? (
           <button className="cursor-pointer w-full rounded-xl bg-purple-600 py-2.5 text-xs font-bold text-white hover:bg-purple-700 transition-colors">
             Process Settlement (Pelunasan)
           </button>
-        )}
+        ) : null}
 
         {loan.status === "SETTLED" && (
           <div className="rounded-xl bg-purple-50 p-3 text-center text-xs font-medium text-purple-700 border border-purple-100">

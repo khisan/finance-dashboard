@@ -5,6 +5,7 @@ import { useAsync } from "@/hooks/useApi"
 import { useAuth } from "@/hooks/useAuth"
 import { ENTITY_LABEL } from "@/lib/auditLabels"
 import { formatDateTime } from "@/lib/format"
+import { isApprover } from "@/lib/roles"
 import {
   approveApproval,
   cancelApproval,
@@ -38,7 +39,10 @@ const HIDDEN_DIFF_KEYS = new Set([
 
 function displayValue(key: string, value: unknown): string {
   if (value === null || value === undefined || value === "") return "—"
-  if ((key.endsWith("_at") || key.endsWith("At") || key.endsWith("_date")) && typeof value === "string") {
+  if (
+    (key.endsWith("_at") || key.endsWith("At") || key.endsWith("_date")) &&
+    typeof value === "string"
+  ) {
     return formatDateTime(value)
   }
   if (typeof value === "object") return JSON.stringify(value)
@@ -59,7 +63,11 @@ function DiffView({
     .sort()
 
   if (keys.length === 0) {
-    return <p className="text-sm text-stone-500">Tidak ada field yang bisa ditampilkan.</p>
+    return (
+      <p className="text-sm text-stone-500">
+        Tidak ada field yang bisa ditampilkan.
+      </p>
+    )
   }
 
   return (
@@ -81,7 +89,9 @@ function DiffView({
               <tr key={key} className={changed ? "bg-amber-50/60" : undefined}>
                 <td className="px-3 py-2 font-medium text-stone-700">{key}</td>
                 <td className="px-3 py-2 text-stone-500">{beforeText}</td>
-                <td className={`px-3 py-2 ${changed ? "font-semibold text-amber-800" : "text-stone-600"}`}>
+                <td
+                  className={`px-3 py-2 ${changed ? "font-semibold text-amber-800" : "text-stone-600"}`}
+                >
                   {afterText}
                 </td>
               </tr>
@@ -95,7 +105,7 @@ function DiffView({
 
 export default function ApprovalsPage() {
   const { user } = useAuth()
-  const canDecide = user?.role === "admin" || user?.role === "finance"
+  const canDecide = isApprover(user?.role)
   const [status, setStatus] = useState<ApprovalStatus | "">("PENDING")
   const [entityType, setEntityType] = useState<ApprovalEntityType | "">("")
   const [detail, setDetail] = useState<ApprovalRequest | null>(null)
@@ -109,10 +119,11 @@ export default function ApprovalsPage() {
   const [notice, setNotice] = useState<string | null>(null)
 
   const fetchApprovals = useCallback(
-    () => getApprovals({
-      status: status || undefined,
-      entityType: entityType || undefined,
-    }),
+    () =>
+      getApprovals({
+        status: status || undefined,
+        entityType: entityType || undefined,
+      }),
     [status, entityType],
   )
   const { data, loading, error, refetch } = useAsync<ApprovalRequest[]>(
@@ -181,7 +192,8 @@ export default function ApprovalsPage() {
     {
       key: "entityType",
       header: "Data",
-      render: (r: ApprovalRequest) => `${ENTITY_LABEL[r.entityType] ?? r.entityType} / ${OPERATION_LABEL[r.operation] ?? r.operation}`,
+      render: (r: ApprovalRequest) =>
+        `${ENTITY_LABEL[r.entityType] ?? r.entityType} / ${OPERATION_LABEL[r.operation] ?? r.operation}`,
     },
     {
       key: "targetStatus",
@@ -207,7 +219,7 @@ export default function ApprovalsPage() {
       key: "decisionNote",
       header: "Catatan",
       render: (r: ApprovalRequest) => (
-        <span className="max-w-[200px] block truncate" title={r.decisionNote ?? ""}>
+        <span className="max-w-md block truncate" title={r.decisionNote ?? ""}>
           {r.selfApprovalOverride ? "Override: " : ""}
           {r.decisionNote ?? r.reason ?? "—"}
         </span>
@@ -248,15 +260,19 @@ export default function ApprovalsPage() {
             Jenis data
             <select
               value={entityType}
-              onChange={(e) => setEntityType(e.target.value as ApprovalEntityType | "")}
+              onChange={(e) =>
+                setEntityType(e.target.value as ApprovalEntityType | "")
+              }
               className="mt-1 block rounded-lg border border-stone-200 px-3 py-2 text-sm text-stone-800"
             >
               <option value="">Semua</option>
-              {(Object.keys(ENTITY_LABEL) as ApprovalEntityType[]).map((key) => (
-                <option key={key} value={key}>
-                  {ENTITY_LABEL[key]}
-                </option>
-              ))}
+              {(Object.keys(ENTITY_LABEL) as ApprovalEntityType[]).map(
+                (key) => (
+                  <option key={key} value={key}>
+                    {ENTITY_LABEL[key]}
+                  </option>
+                ),
+              )}
             </select>
           </label>
         </div>
@@ -268,7 +284,12 @@ export default function ApprovalsPage() {
         loading={loading}
         error={error}
         onRetry={refetch}
-        searchKeys={["businessNumber", "requestedByEmail", "entityType", "operation"]}
+        searchKeys={[
+          "businessNumber",
+          "requestedByEmail",
+          "entityType",
+          "operation",
+        ]}
         pageSize={10}
         emptyMessage="Tidak ada proposal sesuai filter."
         title="Persetujuan"
@@ -301,7 +322,8 @@ export default function ApprovalsPage() {
               </>
             ) : null}
             {r.status === "PENDING" &&
-            (user?.role === "admin" || user?.id === r.requestedById) ? (
+            (user?.role === "admin" ||
+              (!canDecide && user?.id === r.requestedById)) ? (
               <button
                 type="button"
                 disabled={busy}
@@ -319,7 +341,9 @@ export default function ApprovalsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/40 p-4">
           <Card className="w-full max-w-md p-5">
             <h2 className="text-lg font-semibold text-stone-900">
-              {decision.kind === "approve" ? "Setujui proposal" : "Tolak proposal"}
+              {decision.kind === "approve"
+                ? "Setujui proposal"
+                : "Tolak proposal"}
             </h2>
             <p className="mt-1 text-sm text-stone-500">
               {decision.kind === "reject"
@@ -331,7 +355,11 @@ export default function ApprovalsPage() {
               onChange={(e) => setNote(e.target.value)}
               rows={3}
               className="mt-3 w-full rounded-lg border border-stone-200 px-3 py-2 text-sm text-stone-800"
-              placeholder={decision.kind === "reject" ? "Alasan penolakan..." : "Catatan (opsional)"}
+              placeholder={
+                decision.kind === "reject"
+                  ? "Alasan penolakan..."
+                  : "Catatan (opsional)"
+              }
             />
             <div className="mt-4 flex justify-end gap-2">
               <button
@@ -343,7 +371,11 @@ export default function ApprovalsPage() {
                 Batal
               </button>
               <Button onClick={() => void submitDecision()} disabled={busy}>
-                {busy ? "Memproses..." : decision.kind === "approve" ? "Setujui" : "Tolak"}
+                {busy
+                  ? "Memproses..."
+                  : decision.kind === "approve"
+                    ? "Setujui"
+                    : "Tolak"}
               </Button>
             </div>
           </Card>
@@ -355,9 +387,13 @@ export default function ApprovalsPage() {
           <div className="h-full w-full max-w-2xl overflow-y-auto bg-white p-5 shadow-xl">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <h2 className="text-lg font-semibold text-stone-900">Detail Proposal</h2>
+                <h2 className="text-lg font-semibold text-stone-900">
+                  Detail Proposal
+                </h2>
                 <p className="text-sm text-stone-500">
-                  {detail.businessNumber ?? detail.id} · {ENTITY_LABEL[detail.entityType]} · {OPERATION_LABEL[detail.operation]}
+                  {detail.businessNumber ?? detail.id} ·{" "}
+                  {ENTITY_LABEL[detail.entityType]} ·{" "}
+                  {OPERATION_LABEL[detail.operation]}
                 </p>
               </div>
               <button
@@ -370,11 +406,28 @@ export default function ApprovalsPage() {
               </button>
             </div>
             <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
-              <div><dt className="text-xs text-stone-400">Status</dt><dd><StatusChip status={detail.status} /></dd></div>
-              <div><dt className="text-xs text-stone-400">Diajukan</dt><dd>{formatDateTime(detail.requestedAt)}</dd></div>
-              <div><dt className="text-xs text-stone-400">Peminta</dt><dd>{detail.requestedByEmail ?? "—"}</dd></div>
-              <div><dt className="text-xs text-stone-400">Target status</dt><dd>{detail.targetStatus ?? "—"}</dd></div>
-              <div className="col-span-2"><dt className="text-xs text-stone-400">Alasan</dt><dd>{detail.reason ?? "—"}</dd></div>
+              <div>
+                <dt className="text-xs text-stone-400">Status</dt>
+                <dd>
+                  <StatusChip status={detail.status} />
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs text-stone-400">Diajukan</dt>
+                <dd>{formatDateTime(detail.requestedAt)}</dd>
+              </div>
+              <div>
+                <dt className="text-xs text-stone-400">Peminta</dt>
+                <dd>{detail.requestedByEmail ?? "—"}</dd>
+              </div>
+              <div>
+                <dt className="text-xs text-stone-400">Target status</dt>
+                <dd>{detail.targetStatus ?? "—"}</dd>
+              </div>
+              <div className="col-span-2">
+                <dt className="text-xs text-stone-400">Alasan</dt>
+                <dd>{detail.reason ?? "—"}</dd>
+              </div>
               {detail.decisionNote ? (
                 <div className="col-span-2">
                   <dt className="text-xs text-stone-400">Catatan keputusan</dt>
@@ -382,7 +435,9 @@ export default function ApprovalsPage() {
                 </div>
               ) : null}
             </dl>
-            <h3 className="mt-5 mb-2 text-sm font-semibold text-stone-800">Perubahan nilai</h3>
+            <h3 className="mt-5 mb-2 text-sm font-semibold text-stone-800">
+              Perubahan nilai
+            </h3>
             <DiffView before={detail.before} after={detail.payload} />
           </div>
         </div>

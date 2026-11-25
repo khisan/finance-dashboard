@@ -6,6 +6,7 @@ import { CreateModal } from "@/components/CreateModal"
 import { DetailView, type DetailSection } from "@/components/DetailView"
 import { loanCreateFields } from "@/forms/createFields"
 import { useAsync } from "@/hooks/useApi"
+import { useCanWrite } from "@/hooks/useAuth"
 import { date, f, money, str, TYPE_LABEL } from "@/lib/detailFields"
 import { toFormValues } from "@/lib/formValues"
 import { getLoanDetail, updateLoan } from "@/services/loanService"
@@ -117,6 +118,7 @@ function loanSections(loan: LoanDetailData): DetailSection[] {
 export default function LoanDetail() {
   const { id = "" } = useParams()
   const navigate = useNavigate()
+  const canWrite = useCanWrite()
   const [editing, setEditing] = useState(false)
 
   const fetchDetail = useCallback(() => getLoanDetail(id), [id])
@@ -164,7 +166,7 @@ export default function LoanDetail() {
             >
               Kembali
             </button>
-            {record ? (
+            {canWrite && record ? (
               <Button type="button" onClick={() => setEditing(true)}>
                 Edit
               </Button>
@@ -173,7 +175,7 @@ export default function LoanDetail() {
         }
       />
 
-      {editing && record ? (
+      {canWrite && editing && record ? (
         <CreateModal
           title="Edit Pinjaman"
           subtitle="Perubahan menjadi proposal; diterapkan setelah disetujui finance/admin."

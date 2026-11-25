@@ -9,6 +9,7 @@ import {
   type DetailSection,
 } from "@/components/DetailView"
 import { useAsync } from "@/hooks/useApi"
+import { useCanWrite } from "@/hooks/useAuth"
 import { date, f, money, str, TYPE_LABEL } from "@/lib/detailFields"
 import { loanLabel } from "@/lib/format"
 import { toFormValues } from "@/lib/formValues"
@@ -251,6 +252,7 @@ const configs: Record<string, ResourceConfig> = {
 export default function ResourceDetail({ resource }: { resource: string }) {
   const { id = "" } = useParams()
   const navigate = useNavigate()
+  const canWrite = useCanWrite()
   const [editing, setEditing] = useState(false)
   const config = configs[resource]
 
@@ -301,7 +303,7 @@ export default function ResourceDetail({ resource }: { resource: string }) {
             >
               Kembali
             </button>
-            {config.canEdit && record ? (
+            {canWrite && config.canEdit && record ? (
               <Button type="button" onClick={() => setEditing(true)}>
                 Edit
               </Button>
@@ -310,7 +312,7 @@ export default function ResourceDetail({ resource }: { resource: string }) {
         }
       />
 
-      {editing && record ? (
+      {canWrite && editing && record ? (
         <CreateModal
           title={`Edit ${config.label}`}
           subtitle="Perubahan menjadi proposal; diterapkan setelah disetujui finance/admin."
