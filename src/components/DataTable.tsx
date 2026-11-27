@@ -160,7 +160,10 @@ export function DataTable<T extends object>({
               {paged.map((row, i) => (
                 <tr key={i} className="hover:bg-stone-50/70 text-center">
                   {columns.map((c) => (
-                    <td key={c.key} className="px-4 py-3 text-stone-600">
+                    <td
+                      key={c.key}
+                      className="px-4 py-3 text-stone-600 whitespace-nowrap"
+                    >
                       {c.render
                         ? c.render(row)
                         : String(

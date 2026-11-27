@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react"
+import { Ban, Check, Eye, X } from "lucide-react"
 import { DataTable } from "@/components/DataTable"
 import { Button, Card, StatusChip } from "@/components/ui"
 import { useAsync } from "@/hooks/useApi"
@@ -184,9 +185,7 @@ export default function ApprovalsPage() {
       key: "businessNumber",
       header: "No. Bisnis",
       render: (r: ApprovalRequest) => (
-        <span className="font-mono text-xs text-stone-700">
-          {r.businessNumber ?? "—"}
-        </span>
+        <span className="text-stone-700">{r.businessNumber ?? "—"}</span>
       ),
     },
     {
@@ -294,51 +293,70 @@ export default function ApprovalsPage() {
         emptyMessage="Tidak ada proposal sesuai filter."
         title="Persetujuan"
         subtitle="Perubahan data & status menunggu keputusan finance/admin"
-        rowActions={(r) => (
-          <>
-            <button
-              type="button"
-              onClick={() => setDetail(r)}
-              className="cursor-pointer rounded-lg border border-stone-200 px-2 py-1 text-xs font-semibold text-stone-600 hover:bg-stone-50"
-            >
-              Detail
-            </button>
-            {canDecide && r.status === "PENDING" ? (
-              <>
+        rowActions={(r) => {
+          const canCancel =
+            r.status === "PENDING" &&
+            (user?.role === "admin" || (!canDecide && user?.id === r.requestedById))
+
+          return (
+            <div className="flex flex-col items-center gap-2">
+              {canDecide && r.status === "PENDING" ? (
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => openDecision(r, "approve")}
+                    aria-label="Setujui"
+                    title="Setujui"
+                    className="cursor-pointer rounded-lg bg-emerald-600 p-1.5 text-white hover:bg-emerald-700"
+                  >
+                    <Check className="h-4.5 w-4.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => openDecision(r, "reject")}
+                    aria-label="Tolak"
+                    title="Tolak"
+                    className="cursor-pointer rounded-lg bg-red-600 p-1.5 text-white hover:bg-red-700"
+                  >
+                    <X className="h-4.5 w-4.5" />
+                  </button>
+                </div>
+              ) : null}
+              <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => openDecision(r, "approve")}
-                  className="cursor-pointer rounded-lg bg-emerald-600 px-2 py-1 text-xs font-semibold text-white hover:bg-emerald-700"
+                  onClick={() => setDetail(r)}
+                  aria-label="Detail"
+                  title="Detail"
+                  className="cursor-pointer rounded-lg bg-blue-600 p-1.5 text-white hover:bg-blue-700"
                 >
-                  Setujui
+                  <Eye className="h-4.5 w-4.5" />
                 </button>
-                <button
-                  type="button"
-                  onClick={() => openDecision(r, "reject")}
-                  className="cursor-pointer rounded-lg bg-red-600 px-2 py-1 text-xs font-semibold text-white hover:bg-red-700"
-                >
-                  Tolak
-                </button>
-              </>
-            ) : null}
-            {r.status === "PENDING" &&
-            (user?.role === "admin" ||
-              (!canDecide && user?.id === r.requestedById)) ? (
-              <button
-                type="button"
-                disabled={busy}
-                onClick={() => void cancel(r)}
-                className="cursor-pointer rounded-lg border border-stone-200 px-2 py-1 text-xs font-semibold text-stone-600 hover:bg-stone-50 disabled:opacity-50"
-              >
-                Batalkan
-              </button>
-            ) : null}
-          </>
-        )}
+                {canCancel ? (
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => void cancel(r)}
+                    aria-label="Batalkan"
+                    title="Batalkan"
+                    className="cursor-pointer rounded-lg bg-amber-600 p-1.5 text-white hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <Ban className="h-4.5 w-4.5" />
+                  </button>
+                ) : null}
+              </div>
+            </div>
+          )
+        }}
       />
 
       {decision ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/40 p-4">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/40 p-4"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget && !busy) setDecision(null)
+          }}
+        >
           <Card className="w-full max-w-md p-5">
             <h2 className="text-lg font-semibold text-stone-900">
               {decision.kind === "approve"
@@ -383,7 +401,12 @@ export default function ApprovalsPage() {
       ) : null}
 
       {detail ? (
-        <div className="fixed inset-0 z-50 flex justify-end bg-stone-900/40">
+        <div
+          className="fixed inset-0 z-50 flex justify-end bg-stone-900/40"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) setDetail(null)
+          }}
+        >
           <div className="h-full w-full max-w-2xl overflow-y-auto bg-white p-5 shadow-xl">
             <div className="flex items-start justify-between gap-3">
               <div>

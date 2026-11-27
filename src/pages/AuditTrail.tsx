@@ -111,7 +111,7 @@ export default function AuditTrailPage() {
       key: "actorEmail",
       header: "Actor",
       render: (r: AuditLog) => (
-        <div className="text-xs">
+        <div>
           <span className="font-medium text-stone-700">
             {r.actorEmail ?? "system"}
           </span>
@@ -140,9 +140,7 @@ export default function AuditTrailPage() {
       key: "entityId",
       header: "No. Bisnis",
       render: (r: AuditLog) => (
-        <span className="font-mono text-xs text-stone-700">
-          {businessNumber(r)}
-        </span>
+        <span className="font-mono text-stone-700">{businessNumber(r)}</span>
       ),
     },
     {
@@ -257,7 +255,12 @@ export default function AuditTrailPage() {
       />
 
       {detail ? (
-        <div className="fixed inset-0 z-50 flex justify-end bg-stone-900/40">
+        <div
+          className="fixed inset-0 z-50 flex justify-end bg-stone-900/40"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) setDetail(null)
+          }}
+        >
           <div className="h-full w-full max-w-2xl overflow-y-auto bg-white p-5 shadow-xl">
             <div className="flex items-start justify-between gap-3">
               <div>
